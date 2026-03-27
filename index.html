@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>FoMonad: Coming Soon</title>
+		<meta charset="utf-8">
+		<style>
+			body {
+				background: #000;
+				color: #dde;
+				font-family: monospace;
+				text-align: center;
+			}
+			h1::after {
+				content: "\00a0";
+				display: inline-block;
+				transform: translateY(0em);
+				animation: blink 1s infinite step-start;
+			}
+			a {
+				color: #aae;
+			}
+			a::visited, a::active {
+				color: #eae;
+			}
+			p {
+				max-width: 500px;
+			}
+			@keyframes blink {
+				0% {
+					background: #dde;
+				}
+				50% {
+					background: transparent;
+				}
+				100% {
+					background: #dde;
+				}
+
+			}
+			body > * {
+				margin: 1em auto;
+			}
+			body > img {
+				display: block;
+				height: min(400px, 80vh);
+				border: 1px solid #dde;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Coming soon...</h1>
+		<img src="fomonad-named.svg">
+		<p>A new self-consuming automated economy.</p>
+		<p>Everyone has the chance to pull the rug. Maybe it'll be you.</p>
+		<p>[ <a href="https://discord.gg/sWJPYz6gUH">Discord</a> ] [ <a href="https://t.me/fomonad">Telegram</a> ] [ <a href="https://x.com/fomonad_wtf">X (Twitter)</a> ]</p>
+	</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>FoMonad: Not Found</title>
+		<meta charset="utf-8">
+		<style>
+			body {
+				background: #000;
+				color: #dde;
+				font-family: monospace;
+				text-align: center;
+			}
+			h1::after {
+				content: "\00a0";
+				display: inline-block;
+				transform: translateY(0em);
+				animation: blink 1s infinite step-start;
+			}
+			a {
+				color: #aae;
+			}
+			a::visited, a::active {
+				color: #eae;
+			}
+			p {
+				max-width: 500px;
+			}
+			@keyframes blink {
+				0% {
+					background: #dde;
+				}
+				50% {
+					background: transparent;
+				}
+				100% {
+					background: #dde;
+				}
+
+			}
+			body > * {
+				margin: 1em auto;
+			}
+			body > img {
+				display: block;
+				height: min(400px, 80vh);
+				border: 1px solid #dde;
+			}
+		</style>
+	</head>
+	<body>
+		<h1 style="color: #ff0000;">Rugged (404)</h1>
+		<img src="fomonad-named.svg">
+		<p>You're either exploring or followed a dead link.</p>
+		<p>Did you get the answers you were looking for? If not, try the <a href="/">homepage</a>.</p>
+	</body>
+</html>
