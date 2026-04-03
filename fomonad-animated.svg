@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg viewBox="0 0 100 100" version="1.1" id="svg14" xmlns="http://www.w3.org/2000/svg"
+	xmlns:svg="http://www.w3.org/2000/svg" overflow="visible">
+	<defs id="defs14">
+		<style>
+			#sneks {
+				transform-origin: 50px 50px;
+				animation: spin 30s linear infinite;
+			}
+			#sneks_text {
+				transform-origin: 50px 50px;
+				animation: spin 30s cubic-bezier(1,0,0,1) infinite;
+			}
+			#text_pump {
+				transform-box: fill-box;
+				transform-origin: 50% 50%;
+				animation:
+					spin       30s cubic-bezier(1,0,0,1) infinite reverse,
+					textGlitch 15s step-end              infinite 7.25s;
+			}
+			#text_rug {
+				transform-box: fill-box;
+				transform-origin: 50% 50%;
+				animation:
+					spin       30s cubic-bezier(1,0,0,1) infinite reverse,
+					textGlitch 15s step-end              infinite 7.25s;
+			}
+
+			@keyframes spin {
+				0%   { transform: rotate(0deg);   }
+				50%  { transform: rotate(180deg);  }
+				100% { transform: rotate(360deg);  }
+			}
+
+			/* ── PSEUDO-RANDOM GLITCH ────────────────────────────────────────────
+			   Each element gets two animations with prime-ish durations that are
+			   never harmonically related. They drift in and out of phase, so their
+			   glitch windows randomly overlap — reads as unpredictable to the eye.
+			   step-end = instant snap, no interpolation between states.
+			──────────────────────────────────────────────────────────────────────── */
+
+			/* Four displacement patterns */
+			@keyframes gA {
+				0%, 87%, 88.5%, 100% { transform: translate(  0px,  0px); }
+				87.4%                { transform: translate( -4px, -1px); }
+				88.1%                { transform: translate(  3px,  1px); }
+			}
+			@keyframes gB {
+				0%, 91%, 92.4%, 100% { transform: translate(  0px,  0px); }
+				91.3%                { transform: translate(  5px, -2px); }
+				92.0%                { transform: translate( -3px,  0px); }
+			}
+			@keyframes gC {
+				0%, 84%, 85.8%, 100% { transform: translate(  0px,  0px); }
+				84.5%                { transform: translate( -6px,  1px); }
+				85.3%                { transform: translate(  4px, -1px); }
+			}
+			@keyframes gD {
+				0%, 94%, 95.5%, 100% { transform: translate(  0px,  0px); }
+				94.3%                { transform: translate(  3px,  2px); }
+				95.1%                { transform: translate( -5px, -1px); }
+			}
+
+			/* Offset-preserving patterns for ghost elements that have SVG transform
+			   attributes — CSS transform overrides the attribute, so we bake the
+			   original offset into the "resting" state of each keyframe. */
+			@keyframes gOff1 {
+				/* base offset: translate(3, -2) */
+				0%, 90%, 91.5%, 100% { transform: translate(  3px, -2px); }
+				90.4%                { transform: translate(  7px, -5px); }
+				91.1%                { transform: translate(  1px,  0px); }
+			}
+			@keyframes gOff2 {
+				/* base offset: translate(-3, 2) */
+				0%, 88%, 89.8%, 100% { transform: translate( -3px,  2px); }
+				88.4%                { transform: translate( -7px,  5px); }
+				89.3%                { transform: translate( -1px,  1px); }
+			}
+
+			/* ── TEXT MIDLINE GLITCH ─────────────────────────────────────────────
+			   15s cycle, 7s delay — fires twice per 30s spin (~7s and ~22s).
+			   Tune the delay to align with the visual midline crossing.
+			   Glitch burst lives in the first 6% of each cycle (~0.9s window).
+			   Uses CSS `translate` (separate from `transform`) so it composes
+			   with the counter-spin rather than overriding it.
+			──────────────────────────────────────────────────────────────────── */
+			@keyframes textGlitch {
+				0%, 100% { translate: 0 0;       opacity: 0.75; }
+				0.5%  { translate: -0.75px  0;    opacity: 0.50; }
+				1%  { translate:  1.5px -0.75px;  opacity: 1.00; }
+				1.5%  { translate: -1.25px  0.5px;  opacity: 0.15; }
+				2%  { translate:  1px -0.25px;  opacity: 0.85; }
+				2.5%  { translate: -0.5px  0;    opacity: 0.60; }
+				3%  { translate:  0    0;    opacity: 0.75; }
+			}
+
+			/* Per-element timing — primes that never align */
+			#glitch1 {
+				animation:
+					gA 3.71s step-end infinite,
+					gB 7.13s step-end infinite -1.30s;
+			}
+			#glitch2 {
+				animation:
+					gC 5.17s step-end infinite -0.70s,
+					gD 4.37s step-end infinite -2.90s;
+			}
+			#glitch3 {
+				animation:
+					gB 6.29s step-end infinite -1.10s,
+					gA 3.11s step-end infinite -0.40s;
+			}
+			#glitch_pump_snek_2 {
+				animation: gOff1 4.79s step-end infinite -0.80s;
+			}
+			#glitch_dump_snek_2 {
+				animation: gOff2 5.83s step-end infinite -1.70s;
+			}
+			#glitch_dump_snek_1 {
+				animation: gOff2 3.97s step-end infinite -2.20s;
+			}
+			/* Neon glow on the arcs */
+			#sneks { filter: url(#neonGlow); }
+
+			/* Chromatic aberration on the whole scene */
+			#scene { filter: url(#chrAber); }
+		</style>
+
+		<!-- Neon glow: blur + screen blend back onto source, stdDeviation pulses -->
+		<filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+			<feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur">
+				<animate attributeName="stdDeviation"
+					values="1.5;3.0;1.5" dur="4s" repeatCount="indefinite"/>
+			</feGaussianBlur>
+			<feBlend in="SourceGraphic" in2="blur" mode="screen"/>
+		</filter>
+
+		<!-- Chromatic aberration: split R/G/B, offset R left and B right -->
+		<filter id="chrAber" x="-3%" y="-3%" width="106%" height="106%">
+			<feColorMatrix type="matrix" in="SourceGraphic"
+				values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="rChan"/>
+			<feOffset dx="-1.2" dy="0.3" in="rChan" result="rShift"/>
+
+			<feColorMatrix type="matrix" in="SourceGraphic"
+				values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="gChan"/>
+
+			<feColorMatrix type="matrix" in="SourceGraphic"
+				values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="bChan"/>
+			<feOffset dx="1.2" dy="-0.3" in="bChan" result="bShift"/>
+
+			<feBlend mode="screen" in="rShift" in2="gChan" result="rg"/>
+			<feBlend mode="screen" in="rg"     in2="bShift"/>
+		</filter>
+
+		<!-- Scanlines: 3px repeat, 1px dark line -->
+		<pattern id="scanlinesPat" x="0" y="0" width="100" height="3"
+			patternUnits="userSpaceOnUse">
+			<rect width="100" height="1" fill="black" opacity="0.25"/>
+		</pattern>
+	</defs>
+	<g id="scene">
+		<rect x="-500" y="-500" width="1000" height="1000" fill="#060608" id="background" />
+		<rect x="0" y="46" width="100" height="8" fill="#060608" id="glitch_area" />
+		<rect x="0" y="47" width="44" height="2" fill="#ffe600" opacity="0.8" id="glitch1" class="glitch" />
+		<rect x="58" y="51" width="42" height="1.5" fill="#ffe600" opacity="0.55" id="glitch2" class="glitch" />
+		<rect x="40" y="49" width="22" height="1" fill="#00e5ff" opacity="0.4" id="glitch3" class="glitch" />
+		<g id="sneks">
+			<path d="M 17 50 A 33 33 0 0 1 83 50" fill="none" stroke="#00e5ff" stroke-width="9" transform="translate(3,-2)"
+				opacity="0.15" id="glitch_pump_snek_2" class="glitch" />
+			<path d="M 83 50 A 33 33 0 0 1 17 50" fill="none" stroke="#ff2d6b" stroke-width="9" transform="translate(-3,2)"
+				opacity="0.15" id="glitch_dump_snek_2" class="glitch" />
+			<path d="M 17 50 A 33 33 0 0 1 50 17" fill="none" stroke="#00e5ff" stroke-width="5" opacity="0.5" id="path3" />
+			<path d="M 50 17 A 33 33 0 0 1 83 50" fill="none" stroke="#00e5ff" stroke-width="9" id="path4" />
+			<path d="M 83 50 A 33 33 0 0 1 50 83" fill="none" stroke="#ff2d6b" stroke-width="5" opacity="0.5" id="path5" />
+			<path d="M 50 83 A 33 33 0 0 1 17 50" fill="none" stroke="#ff2d6b" stroke-width="9" id="path6" />
+			<polygon points="83,43 90,50 83,57 76,50" fill="#00e5ff" id="polygon9" />
+			<circle cx="86" cy="47" r="2" fill="#ffe600" id="pump_snek_eye" />
+			<polygon points="83,43 90,50 83,57 76,50" fill="#00e5ff" transform="translate(3,-2)" opacity="0.2"
+				id="glitch_pump_snek_1" class="glitch" />
+			<polygon points="17,57 10,50 17,43 24,50" fill="#ff2d6b" id="polygon11" />
+			<circle cx="14" cy="53" r="2" fill="#ffe600" id="dump_snek_eye" />
+			<polygon points="17,57 10,50 17,43 24,50" fill="#ff2d6b" transform="translate(-3,2)" opacity="0.2"
+				id="glitch_dump_snek_1" class="glitch" />
+		</g>
+		<g id="sneks_text">
+			<text x="50" y="33" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#00e5ff"
+				letter-spacing="2.5" opacity="0.75" id="text_pump">PUMP</text>
+			<text x="50" y="74" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#ff2d6b"
+				letter-spacing="3.5" opacity="0.75" id="text_rug">RUG</text>
+		</g>
+		<circle cx="50" cy="50" r="4" fill="#ff2d6b" id="circle13" />
+		<circle cx="50" cy="50" r="4" fill="#00e5ff" transform="translate(1.5,0)" opacity="0.45" id="circle14" />
+		<rect  x="-500" y="-500" width="1000" height="1000" fill="url(#scanlinesPat)" id="scanlines_overlay" pointer-events="none" />
+	</g>
+</svg>
