@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Optimized: zero SVG filters.
+     Chromatic aberration: three channel layers with pre-computed colours,
+     composited via mix-blend-mode:screen.
+     Neon glow: radial-gradient rings centred at the spin origin. -->
+<svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+	<defs>
+		<style>
+			/* ── SPIN ───────────────────────────────────────────────────────── */
+			.sneks {
+				transform-origin: 50px 50px;
+				animation: spin 30s linear infinite;
+				will-change: transform;
+			}
+			.sneks-text {
+				transform-origin: 50px 50px;
+				animation: spin 30s cubic-bezier(1,0,0,1) infinite;
+				will-change: transform;
+			}
+			.text-pump {
+				transform-box: fill-box;
+				transform-origin: 50% 50%;
+				animation:
+					spin       30s cubic-bezier(1,0,0,1) infinite reverse,
+					textGlitch 15s step-end              infinite 7.25s;
+			}
+			.text-rug {
+				transform-box: fill-box;
+				transform-origin: 50% 50%;
+				animation:
+					spin       30s cubic-bezier(1,0,0,1) infinite reverse,
+					textGlitch 15s step-end              infinite 7.25s;
+			}
+
+			@keyframes spin {
+				0%   { transform: rotate(0deg);   }
+				50%  { transform: rotate(180deg);  }
+				100% { transform: rotate(360deg);  }
+			}
+
+			/* ── PSEUDO-RANDOM GLITCH ──────────────────────────────────────── */
+			@keyframes gA {
+				0%, 87%, 88.5%, 100% { transform: translate(  0px,  0px); }
+				87.4%                { transform: translate( -4px, -1px); }
+				88.1%                { transform: translate(  3px,  1px); }
+			}
+			@keyframes gB {
+				0%, 91%, 92.4%, 100% { transform: translate(  0px,  0px); }
+				91.3%                { transform: translate(  5px, -2px); }
+				92.0%                { transform: translate( -3px,  0px); }
+			}
+			@keyframes gC {
+				0%, 84%, 85.8%, 100% { transform: translate(  0px,  0px); }
+				84.5%                { transform: translate( -6px,  1px); }
+				85.3%                { transform: translate(  4px, -1px); }
+			}
+			@keyframes gD {
+				0%, 94%, 95.5%, 100% { transform: translate(  0px,  0px); }
+				94.3%                { transform: translate(  3px,  2px); }
+				95.1%                { transform: translate( -5px, -1px); }
+			}
+
+			@keyframes gOff1 {
+				0%, 90%, 91.5%, 100% { transform: translate(  3px, -2px); }
+				90.4%                { transform: translate(  7px, -5px); }
+				91.1%                { transform: translate(  1px,  0px); }
+			}
+			@keyframes gOff2 {
+				0%, 88%, 89.8%, 100% { transform: translate( -3px,  2px); }
+				88.4%                { transform: translate( -7px,  5px); }
+				89.3%                { transform: translate( -1px,  1px); }
+			}
+
+			/* ── TEXT MIDLINE GLITCH ────────────────────────────────────────── */
+			@keyframes textGlitch {
+				0%, 100% { translate: 0 0;         opacity: 0.75; }
+				0.5%     { translate: -0.75px  0;   opacity: 0.50; }
+				1%       { translate:  1.5px -0.75px; opacity: 1.00; }
+				1.5%     { translate: -1.25px  0.5px; opacity: 0.15; }
+				2%       { translate:  1px -0.25px;   opacity: 0.85; }
+				2.5%     { translate: -0.5px  0;      opacity: 0.60; }
+				3%       { translate:  0    0;         opacity: 0.75; }
+			}
+
+			/* Per-element glitch timing */
+			.g1  { animation: gA 3.71s step-end infinite,       gB 7.13s step-end infinite -1.30s; }
+			.g2  { animation: gC 5.17s step-end infinite -0.70s, gD 4.37s step-end infinite -2.90s; }
+			.g3  { animation: gB 6.29s step-end infinite -1.10s, gA 3.11s step-end infinite -0.40s; }
+			.gp2 { animation: gOff1 4.79s step-end infinite -0.80s; }
+			.gd2 { animation: gOff2 5.83s step-end infinite -1.70s; }
+			.gd1 { animation: gOff2 3.97s step-end infinite -2.20s; }
+
+			/* ── NEON GLOW (radial gradient, pulsing opacity) ─────────────── */
+			.glow { animation: glowPulse 4s ease-in-out infinite; }
+			@keyframes glowPulse {
+				0%, 100% { opacity: 0.55; }
+				50%      { opacity: 0.85; }
+			}
+
+			/* ── CHANNEL GROUPS ────────────────────────────────────────────── */
+			.chan-r { transform: translate(-1.2px, 0.3px);  mix-blend-mode: screen; }
+			.chan-g { mix-blend-mode: screen; }
+			.chan-b { transform: translate(1.2px, -0.3px);  mix-blend-mode: screen; }
+		</style>
+
+		<!-- Scanlines -->
+		<pattern id="scanlinesPat" x="0" y="0" width="100" height="3"
+			patternUnits="userSpaceOnUse">
+			<rect width="100" height="1" fill="black" opacity="0.25"/>
+		</pattern>
+
+		<!-- Clip halves: cyan arcs = top, pink arcs = bottom -->
+		<clipPath id="topHalf"><rect x="0" y="0" width="100" height="50"/></clipPath>
+		<clipPath id="botHalf"><rect x="0" y="50" width="100" height="50"/></clipPath>
+
+		<!-- ── Glow gradients: ring at r≈33, centred at (50,50) ──────────
+		     Arcs sit at radius 33 from centre.  stroke-width 9 → edges
+		     at r≈28.5–37.5.  Glow extends ~4px beyond → r≈24–42.
+		     Gradient r=50, so stops are fraction/50.
+		     Thin arcs (sw 5, opacity 0.5) are dimmer; the ring shape
+		     naturally under-represents them — close enough.
+		──────────────────────────────────────────────────────────────── -->
+
+		<!-- Glow gradients: Gaussian-like bell curve centred on the arc
+		     ring (r=33 from origin, = 66% of gradient r=50).
+		     Arcs: stroke-width 9 → edges at r≈28.5–37.5.
+		     Blur σ≈2.2 → visible glow extends ~3σ beyond edges.
+		     More stops for smooth Gaussian falloff. -->
+
+		<!-- RED channel (only pink arcs, R of #ff2d6b = #ff0000) -->
+		<radialGradient id="glowR_pink" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse">
+			<stop offset="38%" stop-color="#ff0000" stop-opacity="0"/>
+			<stop offset="48%" stop-color="#ff0000" stop-opacity="0.06"/>
+			<stop offset="54%" stop-color="#ff0000" stop-opacity="0.20"/>
+			<stop offset="58%" stop-color="#ff0000" stop-opacity="0.40"/>
+			<stop offset="63%" stop-color="#ff0000" stop-opacity="0.60"/>
+			<stop offset="66%" stop-color="#ff0000" stop-opacity="0.65"/>
+			<stop offset="69%" stop-color="#ff0000" stop-opacity="0.60"/>
+			<stop offset="74%" stop-color="#ff0000" stop-opacity="0.40"/>
+			<stop offset="80%" stop-color="#ff0000" stop-opacity="0.20"/>
+			<stop offset="86%" stop-color="#ff0000" stop-opacity="0.06"/>
+			<stop offset="94%" stop-color="#ff0000" stop-opacity="0"/>
+		</radialGradient>
+
+		<!-- GREEN channel -->
+		<radialGradient id="glowG_cyan" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse">
+			<stop offset="38%" stop-color="#00e500" stop-opacity="0"/>
+			<stop offset="48%" stop-color="#00e500" stop-opacity="0.06"/>
+			<stop offset="54%" stop-color="#00e500" stop-opacity="0.20"/>
+			<stop offset="58%" stop-color="#00e500" stop-opacity="0.40"/>
+			<stop offset="63%" stop-color="#00e500" stop-opacity="0.60"/>
+			<stop offset="66%" stop-color="#00e500" stop-opacity="0.65"/>
+			<stop offset="69%" stop-color="#00e500" stop-opacity="0.60"/>
+			<stop offset="74%" stop-color="#00e500" stop-opacity="0.40"/>
+			<stop offset="80%" stop-color="#00e500" stop-opacity="0.20"/>
+			<stop offset="86%" stop-color="#00e500" stop-opacity="0.06"/>
+			<stop offset="94%" stop-color="#00e500" stop-opacity="0"/>
+		</radialGradient>
+		<radialGradient id="glowG_pink" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse">
+			<stop offset="38%" stop-color="#002d00" stop-opacity="0"/>
+			<stop offset="48%" stop-color="#002d00" stop-opacity="0.06"/>
+			<stop offset="54%" stop-color="#002d00" stop-opacity="0.20"/>
+			<stop offset="58%" stop-color="#002d00" stop-opacity="0.40"/>
+			<stop offset="63%" stop-color="#002d00" stop-opacity="0.60"/>
+			<stop offset="66%" stop-color="#002d00" stop-opacity="0.65"/>
+			<stop offset="69%" stop-color="#002d00" stop-opacity="0.60"/>
+			<stop offset="74%" stop-color="#002d00" stop-opacity="0.40"/>
+			<stop offset="80%" stop-color="#002d00" stop-opacity="0.20"/>
+			<stop offset="86%" stop-color="#002d00" stop-opacity="0.06"/>
+			<stop offset="94%" stop-color="#002d00" stop-opacity="0"/>
+		</radialGradient>
+
+		<!-- BLUE channel -->
+		<radialGradient id="glowB_cyan" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse">
+			<stop offset="38%" stop-color="#0000ff" stop-opacity="0"/>
+			<stop offset="48%" stop-color="#0000ff" stop-opacity="0.06"/>
+			<stop offset="54%" stop-color="#0000ff" stop-opacity="0.20"/>
+			<stop offset="58%" stop-color="#0000ff" stop-opacity="0.40"/>
+			<stop offset="63%" stop-color="#0000ff" stop-opacity="0.60"/>
+			<stop offset="66%" stop-color="#0000ff" stop-opacity="0.65"/>
+			<stop offset="69%" stop-color="#0000ff" stop-opacity="0.60"/>
+			<stop offset="74%" stop-color="#0000ff" stop-opacity="0.40"/>
+			<stop offset="80%" stop-color="#0000ff" stop-opacity="0.20"/>
+			<stop offset="86%" stop-color="#0000ff" stop-opacity="0.06"/>
+			<stop offset="94%" stop-color="#0000ff" stop-opacity="0"/>
+		</radialGradient>
+		<!-- Eye glow (yellow #ffe600 → R:#ff0000 G:#00e600 B:skip) -->
+		<radialGradient id="glowEyeR" gradientUnits="objectBoundingBox" cx="0.5" cy="0.5" r="0.5">
+			<stop offset="0%"   stop-color="#ff0000" stop-opacity="0.7"/>
+			<stop offset="30%"  stop-color="#ff0000" stop-opacity="0.45"/>
+			<stop offset="60%"  stop-color="#ff0000" stop-opacity="0.15"/>
+			<stop offset="100%" stop-color="#ff0000" stop-opacity="0"/>
+		</radialGradient>
+		<radialGradient id="glowEyeG" gradientUnits="objectBoundingBox" cx="0.5" cy="0.5" r="0.5">
+			<stop offset="0%"   stop-color="#00e600" stop-opacity="0.7"/>
+			<stop offset="30%"  stop-color="#00e600" stop-opacity="0.45"/>
+			<stop offset="60%"  stop-color="#00e600" stop-opacity="0.15"/>
+			<stop offset="100%" stop-color="#00e600" stop-opacity="0"/>
+		</radialGradient>
+
+		<radialGradient id="glowB_pink" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse">
+			<stop offset="38%" stop-color="#00006b" stop-opacity="0"/>
+			<stop offset="48%" stop-color="#00006b" stop-opacity="0.06"/>
+			<stop offset="54%" stop-color="#00006b" stop-opacity="0.20"/>
+			<stop offset="58%" stop-color="#00006b" stop-opacity="0.40"/>
+			<stop offset="63%" stop-color="#00006b" stop-opacity="0.60"/>
+			<stop offset="66%" stop-color="#00006b" stop-opacity="0.65"/>
+			<stop offset="69%" stop-color="#00006b" stop-opacity="0.60"/>
+			<stop offset="74%" stop-color="#00006b" stop-opacity="0.40"/>
+			<stop offset="80%" stop-color="#00006b" stop-opacity="0.20"/>
+			<stop offset="86%" stop-color="#00006b" stop-opacity="0.06"/>
+			<stop offset="94%" stop-color="#00006b" stop-opacity="0"/>
+		</radialGradient>
+	</defs>
+
+	<!-- Background -->
+	<rect x="0" y="0" width="100" height="100" fill="#060608"/>
+
+	<g style="isolation: isolate">
+
+		<!-- ═══ RED CHANNEL (offset left-down) ═══════════════════════════ -->
+		<g class="chan-r">
+			<rect x="0" y="46" width="100" height="8" fill="#060000"/>
+			<rect x="0" y="47" width="44" height="2" fill="#ff0000" opacity="0.8" class="g1"/>
+			<rect x="58" y="51" width="42" height="1.5" fill="#ff0000" opacity="0.55" class="g2"/>
+			<g class="sneks">
+				<!-- Glow: pink half only (cyan R=0) -->
+				<circle cx="50" cy="50" r="50" fill="url(#glowR_pink)" clip-path="url(#botHalf)" class="glow"/>
+
+				<!-- Ghost arcs -->
+				<path d="M 83 50 A 33 33 0 0 1 17 50" fill="none" stroke="#ff0000" stroke-width="9" transform="translate(-3,2)" opacity="0.15" class="gd2"/>
+				<!-- Main arcs (cyan R=0 but kept as black occluders) -->
+				<path d="M 17 50 A 33 33 0 0 1 50 17" fill="none" stroke="#000000" stroke-width="5" opacity="0.5"/>
+				<path d="M 50 17 A 33 33 0 0 1 83 50" fill="none" stroke="#000000" stroke-width="9"/>
+				<path d="M 83 50 A 33 33 0 0 1 50 83" fill="none" stroke="#ff0000" stroke-width="5" opacity="0.5"/>
+				<path d="M 50 83 A 33 33 0 0 1 17 50" fill="none" stroke="#ff0000" stroke-width="9"/>
+				<!-- Heads (cyan as black occluder to cover pink tail) -->
+				<polygon points="83,43 90,50 83,57 76,50" fill="#000000"/>
+				<polygon points="17,57 10,50 17,43 24,50" fill="#ff0000"/>
+				<!-- Eye glow -->
+				<circle cx="86" cy="47" r="6" fill="url(#glowEyeR)" class="glow"/>
+				<circle cx="14" cy="53" r="6" fill="url(#glowEyeR)" class="glow"/>
+				<!-- Eyes -->
+				<circle cx="86" cy="47" r="2" fill="#ff0000"/>
+				<circle cx="14" cy="53" r="2" fill="#ff0000"/>
+				<!-- Ghost heads -->
+				<polygon points="17,57 10,50 17,43 24,50" fill="#ff0000" transform="translate(-3,2)" opacity="0.2" class="gd1"/>
+			</g>
+			<g class="sneks-text">
+				<text x="50" y="74" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#ff0000" letter-spacing="3.5" opacity="0.75" class="text-rug">RUG</text>
+			</g>
+			<circle cx="50" cy="50" r="4" fill="#ff0000"/>
+		</g>
+
+		<!-- ═══ GREEN CHANNEL (center, no offset) ═══════════════════════ -->
+		<g class="chan-g">
+			<rect x="0" y="46" width="100" height="8" fill="#000600"/>
+			<rect x="0" y="47" width="44" height="2" fill="#00f800" opacity="0.8" class="g1"/>
+			<rect x="58" y="51" width="42" height="1.5" fill="#00f800" opacity="0.55" class="g2"/>
+			<rect x="40" y="49" width="22" height="1" fill="#00f800" opacity="0.4" class="g3"/>
+			<g class="sneks">
+				<!-- Glow: both halves -->
+				<circle cx="50" cy="50" r="50" fill="url(#glowG_cyan)" clip-path="url(#topHalf)" class="glow"/>
+				<circle cx="50" cy="50" r="50" fill="url(#glowG_pink)" clip-path="url(#botHalf)" class="glow"/>
+
+				<!-- Ghost arcs -->
+				<path d="M 17 50 A 33 33 0 0 1 83 50" fill="none" stroke="#00f800" stroke-width="9" transform="translate(3,-2)" opacity="0.15" class="gp2"/>
+				<path d="M 83 50 A 33 33 0 0 1 17 50" fill="none" stroke="#004b00" stroke-width="9" transform="translate(-3,2)" opacity="0.15" class="gd2"/>
+				<!-- Main arcs -->
+				<path d="M 17 50 A 33 33 0 0 1 50 17" fill="none" stroke="#00f800" stroke-width="5" opacity="0.5"/>
+				<path d="M 50 17 A 33 33 0 0 1 83 50" fill="none" stroke="#00f800" stroke-width="9"/>
+				<path d="M 83 50 A 33 33 0 0 1 50 83" fill="none" stroke="#004b00" stroke-width="5" opacity="0.5"/>
+				<path d="M 50 83 A 33 33 0 0 1 17 50" fill="none" stroke="#004b00" stroke-width="9"/>
+				<!-- Heads -->
+				<polygon points="83,43 90,50 83,57 76,50" fill="#00f800"/>
+				<polygon points="17,57 10,50 17,43 24,50" fill="#004b00"/>
+				<!-- Eye glow -->
+				<circle cx="86" cy="47" r="6" fill="url(#glowEyeG)" class="glow"/>
+				<circle cx="14" cy="53" r="6" fill="url(#glowEyeG)" class="glow"/>
+				<!-- Eyes -->
+				<circle cx="86" cy="47" r="2" fill="#00f800"/>
+				<circle cx="14" cy="53" r="2" fill="#00f800"/>
+				<!-- Ghost heads -->
+				<polygon points="83,43 90,50 83,57 76,50" fill="#00f800" transform="translate(3,-2)" opacity="0.2"/>
+				<polygon points="17,57 10,50 17,43 24,50" fill="#004b00" transform="translate(-3,2)" opacity="0.2" class="gd1"/>
+			</g>
+			<g class="sneks-text">
+				<text x="50" y="33" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#00f800" letter-spacing="2.5" opacity="0.75" class="text-pump">PUMP</text>
+				<text x="50" y="74" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#004b00" letter-spacing="3.5" opacity="0.75" class="text-rug">RUG</text>
+			</g>
+			<circle cx="50" cy="50" r="4" fill="#004b00"/>
+			<circle cx="50" cy="50" r="4" fill="#00f800" transform="translate(1.5,0)" opacity="0.45"/>
+		</g>
+
+		<!-- ═══ BLUE CHANNEL (offset right-up) ══════════════════════════ -->
+		<g class="chan-b">
+			<rect x="0" y="46" width="100" height="8" fill="#000008"/>
+			<rect x="40" y="49" width="22" height="1" fill="#0000ff" opacity="0.4" class="g3"/>
+			<g class="sneks">
+				<!-- Glow: both halves -->
+				<circle cx="50" cy="50" r="50" fill="url(#glowB_cyan)" clip-path="url(#topHalf)" class="glow"/>
+				<circle cx="50" cy="50" r="50" fill="url(#glowB_pink)" clip-path="url(#botHalf)" class="glow"/>
+
+				<!-- Ghost arcs -->
+				<path d="M 17 50 A 33 33 0 0 1 83 50" fill="none" stroke="#0000ff" stroke-width="9" transform="translate(3,-2)" opacity="0.15" class="gp2"/>
+				<path d="M 83 50 A 33 33 0 0 1 17 50" fill="none" stroke="#00009d" stroke-width="9" transform="translate(-3,2)" opacity="0.15" class="gd2"/>
+				<!-- Main arcs -->
+				<path d="M 17 50 A 33 33 0 0 1 50 17" fill="none" stroke="#0000ff" stroke-width="5" opacity="0.5"/>
+				<path d="M 50 17 A 33 33 0 0 1 83 50" fill="none" stroke="#0000ff" stroke-width="9"/>
+				<path d="M 83 50 A 33 33 0 0 1 50 83" fill="none" stroke="#00009d" stroke-width="5" opacity="0.5"/>
+				<path d="M 50 83 A 33 33 0 0 1 17 50" fill="none" stroke="#00009d" stroke-width="9"/>
+				<!-- Heads -->
+				<polygon points="83,43 90,50 83,57 76,50" fill="#0000ff"/>
+				<polygon points="17,57 10,50 17,43 24,50" fill="#00009d"/>
+				<!-- Eyes (yellow B=0 → black) -->
+				<circle cx="86" cy="47" r="2" fill="#000000"/>
+				<circle cx="14" cy="53" r="2" fill="#000000"/>
+				<!-- Ghost heads -->
+				<polygon points="83,43 90,50 83,57 76,50" fill="#0000ff" transform="translate(3,-2)" opacity="0.2"/>
+				<polygon points="17,57 10,50 17,43 24,50" fill="#00009d" transform="translate(-3,2)" opacity="0.2" class="gd1"/>
+			</g>
+			<g class="sneks-text">
+				<text x="50" y="33" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#0000ff" letter-spacing="2.5" opacity="0.75" class="text-pump">PUMP</text>
+				<text x="50" y="74" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#00009d" letter-spacing="3.5" opacity="0.75" class="text-rug">RUG</text>
+			</g>
+			<circle cx="50" cy="50" r="4" fill="#00009d"/>
+			<circle cx="50" cy="50" r="4" fill="#0000ff" transform="translate(1.5,0)" opacity="0.45"/>
+		</g>
+
+	</g>
+
+	<!-- Scanlines -->
+	<rect x="0" y="0" width="100" height="100" fill="url(#scanlinesPat)" pointer-events="none"/>
+</svg>

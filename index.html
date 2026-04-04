@@ -105,7 +105,7 @@ nav {
   display: flex;
   gap: 32px;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 2px;
   color: var(--dim);
 }
@@ -1584,6 +1584,23 @@ html.glitch-on body {
 html.glitch-on #glitch-noise-overlay {
   opacity: 1;
 }
+
+#links:target {
+  outline: 1px solid var(--cyan);
+  outline-offset: 4px;
+  animation: outline-throb 1s infinite ease-in-out;
+}
+@keyframes outline-throb {
+  0%  {
+    outline-offset: 2px;
+  }
+  50% {
+    outline-offset: 12px;
+  }
+  100% {
+    outline-offset: 2px;
+  }
+}
 </style>
 </head>
 <body>
@@ -1632,6 +1649,7 @@ html.glitch-on #glitch-noise-overlay {
     <a href="#mechanics">mechanics</a>
     <a href="#state_of_the_art">state of the art</a>
     <a href="#auteurs">visionaries</a>
+    <a href="#links">talk to us</a>
   </div>
   <a href="./rugpad/" class="nav-cta">CLICK TO GET RUGGED</a>
 </nav>
@@ -1642,11 +1660,11 @@ html.glitch-on #glitch-noise-overlay {
 
   <!-- Background spinning logo -->
   <div class="hero-bg-logo" aria-hidden="true">
-    <img src="fomonad-animated.svg" width="100%" height="100%" alt="">
+    <img src="fomonad-animated-optimized.svg" width="100%" height="100%" alt="">
   </div>
 
   <div class="hero-content">
-    <div class="hero-eyebrow">// on-chain · monad · consensual · audited</div>
+    <div class="hero-eyebrow">on-chain · monad · consensual</div>
 
     <div class="logo-wrap">
       <!-- There was a logo here, but keeping the empty space here looked pretty cool. So I'm keeping this element. There's nothing permanent like a temporary solution. This comment is part of the art. -->
@@ -2404,7 +2422,7 @@ html.glitch-on #glitch-noise-overlay {
 
 
 <!-- FOOTER -->
-<footer>
+<footer id="footer">
   <div>
     <div class="footer-logo"><span class="fo">Fo</span><span class="mo">Mo</span><span class="nad">nad</span></div>
     <p class="footer-desc">
@@ -2412,19 +2430,19 @@ html.glitch-on #glitch-noise-overlay {
     </p>
   </div>
 
-  <div>
-    <div class="footer-col-title">// CONTRACTS</div>
-    <a href="./rugpad/" class="footer-link">FoMonad Core → Coming soon</a>
-    <a href="./rugpad/" class="footer-link">foMON Token → Coming soon</a>
-    <a href="./rugpad/" class="footer-link">Vibecoin → Coming soon</a>
-  </div>
-
-  <div>
+  <div id="links">
     <div class="footer-col-title">// LINKS</div>
     <a href="https://github.com/fomonad" class="footer-link">GitHub</a>
     <a href="https://t.me/fomonad" class="footer-link">Telegram</a>
     <a href="https://x.com/fomonad_wtf" class="footer-link">Twitter / X</a>
     <a href="https://discord.gg/sWJPYz6gUH" class="footer-link">Discord</a>
+  </div>
+
+  <div>
+    <div class="footer-col-title">// CONTRACTS</div>
+    <a href="./rugpad/" class="footer-link">FoMonad Core → Coming soon</a>
+    <a href="./rugpad/" class="footer-link">foMON Token → Coming soon</a>
+    <a href="./rugpad/" class="footer-link">Vibecoin → Coming soon</a>
   </div>
 
   <div class="footer-disclaimer">
@@ -2440,7 +2458,7 @@ html.glitch-on #glitch-noise-overlay {
 
 <script>
 // ── Inline hero background SVG (progressive enhancement over <img> fallback) ──
-fetch('fomonad-animated.svg')
+fetch('fomonad-animated-optimized.svg')
   .then(r => r.text())
   .then(svg => {
     const container = document.querySelector('.hero-bg-logo');
