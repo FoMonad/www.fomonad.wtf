@@ -911,7 +911,6 @@ a.table-cite:hover { color: var(--cyan); }
   display: flex;
   transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
-  user-select: none;
 }
 
 .auteur-card {
@@ -1847,7 +1846,7 @@ html.glitch-on #glitch-noise-overlay {
       <div class="phase-title">THE INSIDERS</div>
       <div class="phase-duration">2 HOURS · EARLY ACCESS</div>
       <div class="phase-desc">
-        foMON holders only, no matter how small. You're in before the crowd. Price is lowest here. Everyone gets an equal slice of the bottom floor.
+        Private pre-sale. foMON holders only. Everyone gets an equal slice of the bottom floor.
       </div>
     </div>
     <div class="phase-card reveal">
@@ -1855,7 +1854,7 @@ html.glitch-on #glitch-noise-overlay {
       <div class="phase-title">THE "INSIDERS"</div>
       <div class="phase-duration">10 HOURS · OPEN</div>
       <div class="phase-desc">
-        Open to all. Another collective buy-in. Same curve, higher price. Exactly like a VC token launch, except we say so upfront.
+        Public pre-sale. Same curve, higher price. Exactly like a VC token launch, except we say so upfront.
       </div>
     </div>
     <div class="phase-card reveal">
@@ -1863,7 +1862,7 @@ html.glitch-on #glitch-noise-overlay {
       <div class="phase-title cyan">THE PUMP</div>
       <div class="phase-duration">HYPE TIMER · ANY DURATION</div>
       <div class="phase-desc">
-        The initial price has been set. The timer counts down. Each buy mints new Vibecoin, increases its price, and contributes to the rugpull fund.<br>The more Vibecoins minted, the higher rugpull reward, the more time until the rug comes.
+        The initial price has been set. The timer counts down. Each buy mints the Vibecoin, increases its price, and contributes to the rugpull fund.<br>The more Vibecoins minted, the higher rugpull reward.
       </div>
     </div>
     <div class="phase-card reveal">
@@ -2857,6 +2856,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
   const N = track.children.length;
   let cur = 0;
+  let userInteracted = false;
 
   function goTo(i) {
     cur = Math.max(0, Math.min(N - 1, i));
@@ -2866,9 +2866,9 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     if (nextBtn) nextBtn.disabled = cur === N - 1;
   }
 
-  if (prevBtn) prevBtn.addEventListener('click', () => goTo(cur - 1));
-  if (nextBtn) nextBtn.addEventListener('click', () => goTo(cur + 1));
-  dotsEl.querySelectorAll('.auteur-dot').forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+  if (prevBtn) prevBtn.addEventListener('click', () => { userInteracted = true; goTo(cur - 1); });
+  if (nextBtn) nextBtn.addEventListener('click', () => { userInteracted = true; goTo(cur + 1); });
+  dotsEl.querySelectorAll('.auteur-dot').forEach((d, i) => d.addEventListener('click', () => { userInteracted = true; goTo(i); }));
 
   // Swipe / drag support
   let startX = null;
@@ -2877,9 +2877,31 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     if (startX === null) return;
     const dx = e.clientX - startX;
     startX = null;
-    if (Math.abs(dx) > 60) goTo(cur + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 60) { userInteracted = true; goTo(cur + (dx < 0 ? 1 : -1)); }
   });
   track.addEventListener('pointercancel', () => { startX = null; });
+
+  // Auto-advance while in viewport, unless user has manually advanced
+  let autoTimer = null;
+  let inView = false;
+
+  function startAuto() {
+    stopAuto();
+    if (userInteracted || !inView) return;
+    autoTimer = setInterval(() => {
+      if (userInteracted || !inView) { stopAuto(); return; }
+      goTo(cur < N - 1 ? cur + 1 : 0);
+    }, 4000);
+  }
+  function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+
+  const section = document.getElementById('auteurs');
+  if (section && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting;
+      if (inView && !userInteracted) startAuto(); else stopAuto();
+    }, { threshold: 0.3 }).observe(section);
+  }
 
   goTo(0);
 })();
