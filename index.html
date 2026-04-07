@@ -57,7 +57,7 @@ body::before {
   inset: 0;
   background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
   pointer-events: none;
-  z-index: 9999;
+  z-index: 999;
 }
 
 body::after {
@@ -67,7 +67,7 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   opacity: 0.4;
   pointer-events: none;
-  z-index: 9998;
+  z-index: 998;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -122,7 +122,7 @@ nav {
   font-size: 11px;
   letter-spacing: 2px;
   height: 32px;
-  padding: 0px 20px;
+  padding: 0px 14px;
   border: 1px solid var(--cyan);
   color: var(--cyan);
   cursor: pointer;
@@ -1614,11 +1614,43 @@ footer {
 html.glitch-on body {
   filter: url(#page-ca-filter);
 }
+#style-control {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px;
+  pointer-events: none;
+  z-index: 1000;
+}
+#style-control > * { pointer-events: auto; }
+#glitch-mode-select {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  background: var(--bg);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 200px;
+}
+#glitch-mode-select > option {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  height: 32px;
+}
+#glitch-mode-select:hover { background: var(--cyan); color: var(--bg); }
 #glitch-noise-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 99999;
+  z-index: 1000;
   opacity: 0;
   mix-blend-mode: overlay;
   transition: opacity 0.04s;
@@ -2512,6 +2544,13 @@ html.glitch-on #glitch-noise-overlay {
   </div>
 </footer>
 
+<div id="style-control">
+  <select id="glitch-mode-select">
+    <option value="logo">Glitch FX: Main Logo</option>
+    <option value="always">Glitch FX: Always</option>
+    <option value="off">Glitch FX: Off</option>
+  </select>
+</div>
 
 <script>
 // ── Inline hero background SVG (progressive enhancement over <img> fallback) ──
@@ -2923,9 +2962,30 @@ toggle.addEventListener('click', () => {
 (function() {
   const html = document.documentElement;
   const turb = document.getElementById('noiseTurb');
+  const hero = document.getElementById('hero');
   let noiseAnim = null;
+  let glitchTimer = null;
 
   function randomBetween(a, b) { return a + Math.random() * (b - a); }
+
+  function getMode() {
+    const sel = document.getElementById('glitch-mode-select');
+    return sel ? sel.value : 'logo';
+  }
+
+  function heroVisibleRatio() {
+    if (!hero) return 0;
+    const rect = hero.getBoundingClientRect();
+    const visibleHeight = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+    return visibleHeight / window.innerHeight;
+  }
+
+  function shouldGlitch() {
+    const mode = getMode();
+    if (mode === 'off') return false;
+    if (mode === 'always') return true;
+    return heroVisibleRatio() > 0.33;
+  }
 
   function animateNoiseSeed(durationMs) {
     let start = null;
@@ -2946,9 +3006,12 @@ toggle.addEventListener('click', () => {
   }
 
   function triggerGlitch() {
-    const duration = randomBetween(80, 680); // ms the glitch is visible
+    if (!shouldGlitch()) {
+      glitchTimer = setTimeout(triggerGlitch, randomBetween(4000, 12000));
+      return;
+    }
 
-    // Occasionally do a double-flash for a more corrupted feel
+    const duration = randomBetween(80, 680); // ms the glitch is visible
     const doubleFlash = Math.random() < 0.3;
 
     html.classList.add('glitch-on');
@@ -2971,13 +3034,24 @@ toggle.addEventListener('click', () => {
       }
 
       // Schedule next glitch after a random quiet period
-      setTimeout(triggerGlitch, randomBetween(4000, 12000));
+      glitchTimer = setTimeout(triggerGlitch, randomBetween(4000, 12000));
     }, duration);
   }
 
-  // Initial delay before first glitch
-  // temporarily disabling this until it stops hurting people's eyes
-  // setTimeout(triggerGlitch, randomBetween(500, 1000));
+  function startGlitch() {
+    if (glitchTimer) clearTimeout(glitchTimer);
+    html.classList.remove('glitch-on');
+    if (noiseAnim) { cancelAnimationFrame(noiseAnim); noiseAnim = null; }
+    if (getMode() !== 'off') {
+      glitchTimer = setTimeout(triggerGlitch, randomBetween(500, 1000));
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const sel = document.getElementById('glitch-mode-select');
+    if (sel) sel.addEventListener('change', startGlitch);
+    startGlitch();
+  });
 })();
 </script>
 
@@ -3012,5 +3086,6 @@ toggle.addEventListener('click', () => {
   setInterval(update, 1000);
 })();
 </script>
+
 </body>
 </html>
