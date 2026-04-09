@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms & Privacy — FoMonad</title>
+<meta name="description" content="FoMonad terms of participation, risk disclosures, and privacy policy.">
+<link rel="icon" href="/fomonad-named.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./fomonad.css">
+
+<style>
+.legal-main {
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 120px 40px 100px;
+}
+
+.legal-title {
+  font-family: var(--display);
+  font-size: clamp(42px, 7vw, 80px);
+  letter-spacing: 4px;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.legal-updated {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 48px;
+}
+
+.legal-anchor-nav {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--dim);
+  margin-bottom: 64px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--muted);
+  padding-bottom: 24px;
+}
+
+.legal-anchor-nav a {
+  color: var(--dim);
+  text-decoration: underline;
+}
+.legal-anchor-nav a:hover { color: var(--cyan); }
+
+.legal-section {
+  margin-bottom: 52px;
+}
+
+.legal-section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.legal-section-title {
+  font-family: var(--display);
+  font-size: clamp(24px, 3vw, 36px);
+  letter-spacing: 2px;
+  color: var(--text);
+  margin-bottom: 20px;
+  line-height: 1;
+}
+.legal-section-title .accent-c { color: var(--cyan); }
+.legal-section-title .accent-r { color: var(--red); }
+.legal-section-title .accent-y { color: var(--yellow); }
+
+.legal-prose {
+  font-size: 14px;
+  color: var(--dim);
+  line-height: 1.95;
+}
+
+.legal-prose p { margin-bottom: 16px; }
+.legal-prose p:last-child { margin-bottom: 0; }
+.legal-prose strong { color: var(--text); font-weight: 400; }
+.legal-prose em { color: var(--muted); font-style: italic; }
+
+.legal-prose ul {
+  padding-left: 0;
+  margin-bottom: 16px;
+  list-style: none;
+}
+.legal-prose ul li {
+  padding-left: 20px;
+  position: relative;
+  margin-bottom: 10px;
+}
+.legal-prose ul li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+.legal-callout {
+  padding: 20px 24px;
+  border: 1px solid rgba(0,229,255,0.15);
+  background: rgba(0,229,255,0.04);
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--dim);
+  line-height: 1.8;
+}
+.legal-callout.red {
+  border-color: rgba(255,45,107,0.2);
+  background: rgba(255,45,107,0.04);
+}
+.legal-callout strong { color: var(--text); font-weight: 400; }
+
+.legal-divider {
+  border: none;
+  border-top: 1px solid var(--muted);
+  margin: 64px 0;
+}
+
+a:hover {
+  color: var(--cyan);
+}
+
+@media (max-width: 768px) {
+  .legal-main { padding: 100px 20px 80px; }
+}
+</style>
+</head>
+<body>
+
+<!-- GLITCH FILTER DEFS (hidden) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="page-ca-filter" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
+        in="SourceGraphic" result="red"/>
+      <feOffset in="red" dx="-4" dy="1" result="redShifted"/>
+      <feColorMatrix type="matrix"
+        values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0"
+        in="SourceGraphic" result="green"/>
+      <feColorMatrix type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"
+        in="SourceGraphic" result="blue"/>
+      <feOffset in="blue" dx="4" dy="-1" result="blueShifted"/>
+      <feBlend in="redShifted" in2="green" mode="screen" result="rg"/>
+      <feBlend in="rg" in2="blueShifted" mode="screen"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- GLITCH NOISE OVERLAY -->
+<div id="glitch-noise-overlay">
+  <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <filter id="noise-filter" x="0" y="0" width="100%" height="100%">
+      <feTurbulence id="noiseTurb" type="fractalNoise" baseFrequency="0.72" numOctaves="2" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.9  0 0 0 0 0.9  0 0 0 0 0.9  0 0 0 0.12 0" in="noise"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noise-filter)"/>
+  </svg>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><a href="/"><span class="fo">Fo</span><span class="mo">Mo</span><span class="nad">nad</span></a></div>
+  <div class="nav-links">
+    <a href="/#howto">how to play</a>
+    <a href="/#mechanics">mechanics</a>
+    <a href="/#state_of_the_art">state of the art</a>
+    <a href="/#links">talk to us</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-socials">
+      <a href="https://x.com/fomonad_wtf" target="_blank" rel="noopener" aria-label="Twitter / X">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a href="https://t.me/fomonad" target="_blank" rel="noopener" aria-label="Telegram">
+        <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      </a>
+      <a href="https://discord.gg/sWJPYz6gUH" target="_blank" rel="noopener" aria-label="Discord">
+        <svg viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1569 2.4189z"/></svg>
+      </a>
+    </div>
+    <a href="./rugpad/" class="nav-cta"><span class="cta-long">CLICK TO GET RUGGED</span><span class="cta-short">GET RUGGED</span></a>
+  </div>
+</nav>
+
+<main class="legal-main">
+
+  <div class="legal-title">TERMS <span style="color:var(--red)">&amp;</span> PRIVACY</div>
+  <div class="legal-updated">// LAST UPDATED: APRIL 2026</div>
+
+  <div class="legal-anchor-nav" role="navigation" aria-label="Jump to section">
+    <a href="#what-it-is">What FoMonad Is</a>
+    <a href="#the-rug">The Rug</a>
+    <a href="#what-you-accept">What You Accept</a>
+    <a href="#insider-structure">Insider Structure</a>
+    <a href="#vibecoins">Vibecoins</a>
+    <a href="#referrals">Referrals</a>
+    <a href="#no-recourse">No Recourse</a>
+    <a href="#jurisdiction">Jurisdiction</a>
+    <a href="#not-advice">Not Advice</a>
+    <a href="#privacy">Privacy</a>
+  </div>
+
+  <!-- ─── SECTION 1 ─── -->
+  <section class="legal-section" id="what-it-is">
+    <div class="legal-section-label">// 01</div>
+    <h2 class="legal-section-title">WHAT <span class="accent-c">FOMONAD</span> IS</h2>
+    <div class="legal-prose">
+      <p>FoMonad is an autonomous protocol deployed on the Monad blockchain. It is not a company, not a service, and not operated by any identifiable legal entity. There is no CEO, no support team, no dispute resolution mechanism. There are smart contracts.</p>
+      <p>The contracts are <strong>immutable</strong>: no owner functions, no upgrade mechanism, no kill switch. What is deployed is what runs. The protocol executes as written, regardless of outcome.</p>
+      <p>If you are looking for someone to contact about a lost transaction, there is a Telegram and a Discord. There is no legal address. There is no entity that can reverse what happened.</p>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 2 ─── -->
+  <section class="legal-section" id="the-rug">
+    <div class="legal-section-label">// 02</div>
+    <h2 class="legal-section-title">THE <span class="accent-r">RUG</span> IS THE PRODUCT</h2>
+    <div class="legal-prose">
+      <p><strong>A note on shMON:</strong> All value within FoMonad — deposits, prize pools, Vibecoin reserves, dividends, referral earnings — is denominated in shMON, a Monad liquid staking token issued by a third-party protocol (<a href="https://shmonad.xyz/" target="_blank">shMonad</a>). When you deposit MON, it is converted to shMON on entry. FoMonad is not affiliated with shMonad or Fastlane Labs.</p>
+      <p>FoMonad does not hide what it is. The protocol runs scheduled rugpulls — by design, transparently, and with prior disclosure. Each cycle:</p>
+      <ul>
+        <li>A new token (Vibecoin) is deployed on a bonding curve</li>
+        <li>Participants deposit MON or shMON through two pre-sale (Insider and 'Insider') rounds, and a public pump phase</li>
+        <li>A prize pool accumulates from all deposits</li>
+        <li>A countdown timer runs. The last buyer before the timer expires wins 90% of the prize pool</li>
+        <li>When the cycle settles, selling is unlocked and Vibecoin holders may sell back to the bonding curve at whatever price the curve supports at that point in time</li>
+      </ul>
+      <p>This is not a bug. This is not an edge case. This is the entire point. The rug is certain. The only variable is when.</p>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 3 ─── -->
+  <section class="legal-section" id="what-you-accept">
+    <div class="legal-section-label">// 03</div>
+    <h2 class="legal-section-title">WHAT YOU <span class="accent-c">ACCEPT</span></h2>
+    <div class="legal-callout">
+      By connecting your wallet and interacting with FoMonad contracts, you confirm that you have read this document, understood it, and chosen to participate anyway.
+    </div>
+    <div class="legal-prose">
+      <p>Specifically, you acknowledge:</p>
+      <ul>
+        <li>You will likely lose some or all deposited funds. This is the expected outcome for most participants.</li>
+        <li>The rugpull is certain and scheduled. There is no version of events where it does not happen.</li>
+        <li>You are not relying on any representation of profit, return, or value preservation.</li>
+        <li>You have assessed the risks appropriate to your financial situation.</li>
+        <li>You are legally permitted to participate under the laws of your jurisdiction.</li>
+      </ul>
+      <p>Participation constitutes acceptance of these terms. There is no checkbox. There is no legal entity to enforce them anyway. This document exists so that you cannot later claim you were not told.</p>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 4 ─── -->
+  <section class="legal-section" id="insider-structure">
+    <div class="legal-section-label">// 04</div>
+    <h2 class="legal-section-title">INSIDER <span class="accent-y">STRUCTURE</span></h2>
+    <div class="legal-callout red">
+      Most crypto projects bury their insider structure in a tokenomics PDF nobody reads. FoMonad puts it here, in plain language, because the cynicism is load-bearing.
+    </div>
+    <div class="legal-prose">
+      <ul>
+        <li><strong>foMON supply:</strong> 80% of total supply (80,000,000 foMON) was minted to the deployer at contract deployment. This is intentional — it is explicit commentary on standard practices in the crypto industry. It is a feature, not an oversight.</li>
+        <li><strong>Insider (first pre-sale) access:</strong> The first phase of each cycle requires holding a non-zero foMON balance. The deployer controls 80% of the supply at launch. Insider participants get a better bonding curve entry price.</li>
+        <li><strong>Airdrop reserve:</strong> The remaining 20% is emitted over approximately 9 months via a sigmoid curve, distributed randomly during public phase interactions.</li>
+        <li><strong>foMON dividends:</strong> Holders who opt in receive a proportional share of protocol fees (4% of all deposits), denominated in shMON. This yield is real, variable, and not guaranteed. It depends entirely on protocol volume.</li>
+      </ul>
+      <p>You now have more information about this project's insider structure than most crypto investors had about the projects they funded.</p>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 5 ─── -->
+  <section class="legal-section" id="vibecoins">
+    <div class="legal-section-label">// 05</div>
+    <h2 class="legal-section-title"><span class="accent-c">VIBECOIN</span> TOKENS</h2>
+    <div class="legal-prose">
+      <p>Each Vibecoin is a procedurally generated ERC-20 token, unique to one cycle. Key properties:</p>
+      <ul>
+        <li>Linear bonding curve: price increases continuously with supply</li>
+        <li>10% dividend haircut on all buys and sells, distributed proportionally to opted-in Vibecoin holders</li>
+        <li>No external liquidity. All value is determined solely by the bonding curve reserve</li>
+        <li>After cycle settlement, selling is unlocked. Vibecoin holders may sell back to their curve at any time. The curve price will reflect whatever reserve remains after the prize pool is drawn.</li>
+      </ul>
+      <p>Vibecoin tokens are game tokens with a known, scheduled expiry. They are not investments.</p>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 6 ─── -->
+  <section class="legal-section" id="referrals">
+    <div class="legal-section-label">// 06</div>
+    <h2 class="legal-section-title">REFERRAL <span class="accent-y">SYSTEM</span></h2>
+    <div class="legal-prose">
+      <p>The protocol includes an on-chain referral system. Referral codes are registered permanently to the first claiming address, across all cycles — first-come, first-served. To be eligible as a referrer in a given cycle, you must have contributed at least 0.1% of either pre-sale round, or hold more than 0.1% of the active Vibecoin supply. An ineligible referrer earns nothing for that cycle; their code is not freed for re-registration.</p>
+      <p>Referrers earn <strong>6% of deposits</strong> made by users they refer, paid in shMON, claimable at any time.</p>
+      <p>Registering a referral code does not constitute employment, partnership, agency, or any legal relationship with FoMonad or its deployer. You are earning protocol fees, not compensation from an employer.</p>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 7 ─── -->
+  <section class="legal-section" id="no-recourse">
+    <div class="legal-section-label">// 07</div>
+    <h2 class="legal-section-title">NO <span class="accent-r">RECOURSE</span></h2>
+    <div class="legal-prose">
+      <ul>
+        <li>There is no customer support for lost funds</li>
+        <li>There is no mechanism to recover funds sent to the wrong address</li>
+        <li>There is no admin who can pause, reverse, or modify protocol behavior</li>
+        <li>Smart contract bugs, if any exist, may result in total loss of deposited funds. There is no remediation path.</li>
+        <li>Non-shMON tokens sent to protocol contracts are permanently stuck by design. There is no rescue function.</li>
+        <li>The deployer cannot freeze, pause, or intervene in any cycle</li>
+      </ul>
+      <p>You accept all of the above as conditions of participation.</p>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 8 ─── -->
+  <section class="legal-section" id="jurisdiction">
+    <div class="legal-section-label">// 08</div>
+    <h2 class="legal-section-title">JURISDICTION</h2>
+    <div class="legal-prose">
+      <p>FoMonad cannot verify your jurisdiction, enforce geographic restrictions, or accept liability under any particular legal regime. The protocol does not know who you are. It executes instructions. Responsibility for legal compliance rests entirely with you.</p>
+      <p>In particular:</p>
+      <ul>
+        <li><strong>Securities regulation:</strong> foMON token mechanics (dividend distribution, proportional returns) and Vibecoin bonding curves may be classified as unregistered securities under the laws of your jurisdiction. Participation may violate applicable securities regulations. Consult a lawyer before participating.</li>
+        <li><strong>Gambling regulation:</strong> The last-buyer prize pool mechanic may be classified as gambling in your jurisdiction. Several countries regulate or prohibit this type of mechanism. Know your local laws.</li>
+        <li><strong>DeFi regulation:</strong> staking-like mechanics (foMON dividend opt-in) may be subject to financial services regulation in some jurisdictions.</li>
+      </ul>
+      <p>The protocol has no mechanism to block participants by geography. That does not mean you are permitted to participate. It means enforcement is your problem, not the protocol's.</p>
+    </div>
+  </section>
+
+  <!-- ─── SECTION 9 ─── -->
+  <section class="legal-section" id="not-advice">
+    <div class="legal-section-label">// 09</div>
+    <h2 class="legal-section-title">NOT <span class="accent-r">ADVICE</span></h2>
+    <div class="legal-prose">
+      <p>Nothing on fomonad.wtf, in this document, in the contracts, in any social media post, or in any FoMonad-affiliated communication constitutes financial, investment, tax, or legal advice.</p>
+      <p>This is a game. The house always wins — and in this case, the house is a deterministic smart contract that has already decided when the rug happens. Play accordingly.</p>
+    </div>
+  </section>
+
+  <hr class="legal-divider">
+
+  <!-- ─── PRIVACY ─── -->
+  <section class="legal-section" id="privacy">
+    <div class="legal-section-label">// PRIVACY</div>
+    <h2 class="legal-section-title">PRIVACY <span class="accent-c">DISCLOSURES</span></h2>
+    <div class="legal-prose">
+      <p>FoMonad collects no personal data unless you choose to link your Discord account. Here is what does happen:</p>
+      <ul>
+        <li><strong>On-chain activity:</strong> Every transaction you make with FoMonad contracts is recorded permanently on the Monad blockchain. Wallet addresses, amounts, timestamps, and referral relationships are publicly visible to anyone. This is not a FoMonad disclosure — this is how blockchains work.</li>
+        <li><strong>Wallet connection:</strong> When you connect your wallet, your address is read locally by your browser via your wallet extension. It is not transmitted to any FoMonad server. There are no FoMonad servers.</li>
+        <li><strong>LocalStorage:</strong> Your browser's local storage is used to persist your active referral code across page visits. No other data is stored locally. This data never leaves your device.</li>
+        <li><strong>Hosting:</strong> The fomonad.wtf website may be served from standard web infrastructure that logs IP addresses, pages requested, and timestamps. If served via IPFS, no such logs exist at the protocol level, though individual gateways may have their own logging. We do not control or access gateway logs.</li>
+        <li><strong>Google Fonts:</strong> This page loads fonts from Google's CDN. Google's standard font API privacy terms apply to that request. No other third-party scripts, pixels, or analytics are loaded.</li>
+        <li><strong>Discord integration (optional):</strong> If you choose to link your Discord account for role assignment, your Discord user ID and wallet address are stored in association on FoMonad infrastructure. This is the only personal data FoMonad collects. It is used to assign roles based on participation and to generate shareable stats cards on request. It is never sold or shared with third parties. You may unlink at any time, after which the association is deleted. Note that combining a wallet address with a Discord identity creates a potential deanonymization vector — your on-chain activity may become attributable to your Discord identity. This is a consequence of optional linking, not a FoMonad data practice. Discord's own privacy policy governs their handling of your account data.</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer id="footer">
+  <div>
+    <div class="footer-logo"><span class="fo">Fo</span><span class="mo">Mo</span><span class="nad">nad</span></div>
+    <p class="footer-desc">
+      A consensual rugpull on Monad. Every vibecoin is more liquid than your VC portfolio.
+    </p>
+  </div>
+
+  <div id="links">
+    <div class="footer-col-title">// LINKS</div>
+    <a href="https://github.com/fomonad" class="footer-link">GitHub</a>
+    <a href="https://t.me/fomonad" class="footer-link">Telegram</a>
+    <a href="https://x.com/fomonad_wtf" class="footer-link">Twitter / X</a>
+    <a href="https://discord.gg/sWJPYz6gUH" class="footer-link">Discord</a>
+    <a href="./legal.html" class="footer-link">Terms &amp; Privacy</a>
+  </div>
+
+  <div>
+    <div class="footer-col-title">// CONTRACTS</div>
+    <a href="./rugpad/" class="footer-link">FoMonad Core → Coming soon</a>
+    <a href="./rugpad/" class="footer-link">foMON Token → Coming soon</a>
+    <a href="./rugpad/" class="footer-link">Vibecoin → Coming soon</a>
+  </div>
+
+  <div class="footer-disclaimer">
+    FoMonad is a game. Participation involves the certain loss of some or all deposited funds, scheduled by smart contract, transparent and on-chain.
+    This is not financial advice. This is barely even a financial product.
+    By participating you acknowledge that the rug is coming, you are choosing to participate anyway, and that this makes you more informed than 98.6% of crypto participants.
+    FoMonad is not affiliated with Monad Foundation, Category Labs, Elon Musk, Sam Altman, Elizabeth Holmes, Do Kwon, Adam Neumann, Worldcoin, DOGE, FTX, Theranos, Terraform Labs, WeWork, or the incoming automated economy.
+    Though we share more transparency with our users than most of the above.
+  </div>
+</footer>
+
+</body>
+</html>
