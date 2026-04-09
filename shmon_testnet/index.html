@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shMONAD — Testnet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #020810;
+      --surface:   #080f1e;
+      --surface2:  #0d1526;
+      --border:    rgba(131, 110, 249, 0.2);
+      --border-hi: rgba(131, 110, 249, 0.5);
+      --purple:    #836EF9;
+      --indigo:    #4f46e5;
+      --text:      #e8e8f0;
+      --muted:     #6b7280;
+      --green:     #22c55e;
+      --red:       #ef4444;
+      --font:      'Inter', system-ui, sans-serif;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 15px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle radial glow behind the card */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw;
+      height: 80vh;
+      background: radial-gradient(ellipse at center, rgba(131,110,249,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #app {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-Dbd9mnzo.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/utils-B0Fw2xa_.js">
+  <link rel="modulepreload" crossorigin href="./assets/localBatchGatewayRequest-CXtnqGI4.js">
+</head>
+<body>
+  <div id="app">
+    <app-root></app-root>
+  </div>
+</body>
+</html>

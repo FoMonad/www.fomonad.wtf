@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoMonad — Consensual Rugpull</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060608;
+      --bg2: #0a0a0e;
+      --panel: #0d0d1a;
+      --border: #252540;
+      --cyan: #00e5ff;
+      --red: #ff2d6b;
+      --yellow: #ffe600;
+      --green: #00ff9d;
+      --muted: #3a3a4a;
+      --text: #d8d8e8;
+      --dim: #7070888;
+      --mono: 'Share Tech Mono', monospace;
+      --display: 'Bebas Neue', sans-serif;
+      --body: 'DM Sans', sans-serif;
+      --glow-cyan: 0 0 10px #00e5ff66, 0 0 30px #00e5ff22;
+      --glow-red:  0 0 10px #ff2d6b66, 0 0 30px #ff2d6b22;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 15px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 3px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.4;
+    }
+
+    #app {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-VivSK0WT.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/utils-B0Fw2xa_.js">
+  <link rel="modulepreload" crossorigin href="./assets/localBatchGatewayRequest-BDnqlmbC.js">
+</head>
+<body>
+  <app-background></app-background>
+  <div id="app">
+    <app-root></app-root>
+  </div>
+</body>
+</html>

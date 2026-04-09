@@ -68,38 +68,7 @@
 		<h1>Coming soon...</h1>
 		<img src="../fomonad-named.svg">
 		<p>You're very early.</p>
-		<p>Testnet starts <span id="countdown">soon</span>.</p>
-		<script>
-			(function() {
-				var target = 1775741400000;
-				var el = document.getElementById('countdown');
-				var timer = setInterval(update, 990);
-				function pad(n, label) {
-					return n + ' ' + label + (n === 1 ? '' : 's');
-				}
-				function update() {
-					var diff = target - Date.now();
-					if (diff <= 0) {
-						el.textContent = 'very soon. Join our Discord or Telegram for more details.';
-						clearInterval(timer);
-						return;
-					}
-					var s = Math.floor(diff / 1000);
-					var days = Math.floor(s / 86400); s %= 86400;
-					var hours = Math.floor(s / 3600); s %= 3600;
-					var minutes = Math.floor(s / 60); s %= 60;
-					var parts = [];
-					if (days) parts.push(pad(days, 'day'));
-					if (hours) parts.push(pad(hours, 'hour'));
-					if (minutes) parts.push(pad(minutes, 'minute'));
-					parts.push(pad(s, 'second'));
-					el.textContent = "in " + parts.join(', ');
-				}
-				update();
-				
-			})();
-		</script>
-		<p>How will you seize this oppertunity?</p>
+		<p>FoMonad is currently only available <a href="/rugpad_testnet/">on testnet</a>.</p>
 		<p>[ <a href="https://discord.gg/sWJPYz6gUH">Discord</a> ] [ <a href="https://t.me/fomonad">Telegram</a> ] [ <a href="https://x.com/fomonad_wtf">X (Twitter)</a> ]</p>
 	</body>
 </html>
