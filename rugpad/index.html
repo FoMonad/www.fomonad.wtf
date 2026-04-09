@@ -68,7 +68,7 @@
 		<h1>Coming soon...</h1>
 		<img src="../fomonad-named.svg">
 		<p>You're very early.</p>
-		<p>The game starts <span id="countdown">soon</span>.</p>
+		<p>Testnet starts <span id="countdown">soon</span>.</p>
 		<script>
 			(function() {
 				var target = 1775741400000;
@@ -80,7 +80,7 @@
 				function update() {
 					var diff = target - Date.now();
 					if (diff <= 0) {
-						el.textContent = 'very soon. Join our Discord or Telegram to be notified when.';
+						el.textContent = 'very soon. Join our Discord or Telegram for more details.';
 						clearInterval(timer);
 						return;
 					}

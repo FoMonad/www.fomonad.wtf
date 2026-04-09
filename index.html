@@ -1460,7 +1460,7 @@ a.table-cite:hover { color: var(--cyan); }
     </p>
 
     <div class="prize-pool">
-      <div class="prize-label">ROUND 1 LAUNCHES IN</div>
+      <div class="prize-label">TESTNET LAUNCHES IN</div>
       <div class="countdown-display" id="countdown1"></div>
     </div>
 
@@ -1665,7 +1665,7 @@ a.table-cite:hover { color: var(--cyan); }
   <div class="howto-step-header" style="text-align: center; font-size: 32px;">YOU'RE NOW <span class="cyan">INFORMED</span>. GO GET <span class="red">RUGGED</span>.</div>
   <div style="margin-top:60px; text-align:center;">
     <div class="prize-pool" style="max-width:600px; margin:0 auto 32px;">
-      <div class="prize-label">ROUND 1 LAUNCHES IN</div>
+      <div class="prize-label">TESTNET LAUNCHES IN</div>
       <div class="countdown-display" id="countdown2"></div>
     </div>
     <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
@@ -2755,7 +2755,7 @@ toggle.addEventListener('click', () => {
   function update() {
     var diff = target - Date.now();
     if (diff <= 0) {
-      els.forEach(function(el) { if (el) el.innerHTML = '<span style="color:var(--red)">AWAITING DEPLOYMENT</span>'; });
+      els.forEach(function(el) { if (el) el.innerHTML = '<span style="color:var(--red)">AWAITING TESTNET</span>'; });
       return;
     }
     var s = Math.floor(diff / 1000);
