@@ -671,10 +671,20 @@ import{$ as e,$t as t,A as n,An as r,At as i,B as a,Bn as o,Bt as s,C as c,Cn as
 
     main {
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      flex-direction: column;
+      align-items: center;
       padding: 48px 16px;
       min-height: calc(100vh - 73px);
+      gap: 16px;
+    }
+
+    .disclaimer {
+      max-width: 460px;
+      width: 100%;
+      font-size: 12px;
+      color: #4b5563;
+      line-height: 1.6;
+      text-align: center;
     }
   `}render(){return L`
       <header>
@@ -686,5 +696,10 @@ import{$ as e,$t as t,A as n,An as r,At as i,B as a,Bn as o,Bt as s,C as c,Cn as
       </header>
       <main>
         <stake-panel></stake-panel>
+        <p class="disclaimer">
+          This is a third-party interface created by the FoMonad team and is not affiliated with
+          FastLane Labs, the creators of shMonad. Testnet exchange rates between shMON and MON
+          will not reflect those on mainnet.
+        </p>
       </main>
     `}};mf=Q([ti(`app-root`)],mf);
