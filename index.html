@@ -38,6 +38,12 @@
   overflow: hidden;
 }
 
+@media (max-width: 400px) {
+  #hero {
+    padding: 120px 8px 80px;
+  }
+}
+
 #hero::before {
   content: '';
   position: absolute;
@@ -119,6 +125,14 @@ h1 .nad { color: var(--red); }
 }
 .hero-desc strong { color: var(--text); font-weight: 400; }
 
+iframe {
+  width:100%;
+  max-width:600px;
+  display:block;
+  margin:0 auto 32px;
+  border:none;
+  height:220px;
+}
 
 .prize-pool {
   background: rgba(0,229,255,0.08);
@@ -1459,10 +1473,9 @@ a.table-cite:hover { color: var(--cyan); }
       <strong>The rug is the product.</strong>
     </p>
 
-    <div class="prize-pool">
-      <div class="prize-label">LAUNCH</div>
-      <a href="./rugpad_testnet/" class="countdown-display" id="countdown1"></a>
-    </div>
+    <iframe src="./gamestate.html" class="gamestate-widget"
+      scrolling="no" frameborder="0"
+    ></iframe>
 
     <div class="hero-buttons">
       <a href="#howto" class="btn-primary">HOW TO GET RUGGED</a>
@@ -1664,10 +1677,9 @@ a.table-cite:hover { color: var(--cyan); }
   </div>
   <div class="howto-step-header" style="text-align: center; font-size: 32px;">YOU'RE NOW <span class="cyan">INFORMED</span>. GO GET <span class="red">RUGGED</span>.</div>
   <div style="margin-top:60px; text-align:center;">
-    <div class="prize-pool" style="max-width:600px; margin:0 auto 32px;">
-      <div class="prize-label">LAUNCH</div>
-      <a href="./rugpad_testnet/" class="countdown-display" id="countdown2"></a>
-    </div>
+    <iframe src="./gamestate.html" class="gamestate-widget"
+      scrolling="no" frameborder="0"
+    ></iframe>
     <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
       <a href="./rugpad/" class="btn-primary">OPEN APP</a>
       <a href="./rugpad/" class="btn-secondary">VIEW CONTRACT</a>
@@ -2748,35 +2760,14 @@ toggle.addEventListener('click', () => {
 </script>
 
 <script>
-(function() {
-  var target = 1775741400000;
-  var els = [document.getElementById('countdown1'), document.getElementById('countdown2')];
-  function z(n) { return n < 10 ? '0' + n : '' + n; }
-  function update() {
-    var diff = target - Date.now();
-    if (diff <= 0) {
-      els.forEach(function(el) { if (el) el.innerHTML = '<span style="color:var(--red)">LIVE ON TESTNET</span>'; });
-      return;
-    }
-    var s = Math.floor(diff / 1000);
-    var d = Math.floor(s / 86400); s %= 86400;
-    var h = Math.floor(s / 3600); s %= 3600;
-    var m = Math.floor(s / 60); s %= 60;
-    function grp(val, label) {
-      return '<span class="cd-group"><span class="digits">' + z(val) + '</span><span class="unit">' + label + '</span></span>';
-    }
-    var html = '';
-    if (d > 0) {
-      html += grp(d, 'DAYS') + '<span class="sep">:</span>';
-    }
-    html += grp(h, 'HRS') + '<span class="sep">:</span>';
-    html += grp(m, 'MIN') + '<span class="sep">:</span>';
-    html += grp(s, 'SEC');
-    els.forEach(function(el) { if (el) el.innerHTML = html; });
+// Resize gamestate iframes to match their content height
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'fomonad-widget-height') {
+    document.querySelectorAll('iframe.gamestate-widget').forEach(function(f) {
+      f.style.height = e.data.height + 'px';
+    });
   }
-  update();
-  setInterval(update, 1000);
-})();
+});
 </script>
 
 </body>

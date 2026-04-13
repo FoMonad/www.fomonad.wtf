@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoMonad — Game State</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:    #00e5ff;
+  --red:     #ff2d6b;
+  --yellow:  #ffe600;
+  --text:    #c8c8d8;
+  --dim:     #9898a8;
+  --muted:   #606070;
+  --mono:    'Share Tech Mono', monospace;
+  --display: 'Bebas Neue', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: transparent;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.widget {
+  background: rgba(0,229,255,0.06);
+  border: 1px solid rgba(0,229,255,0.15);
+  padding: 20px 28px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.widget::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  animation: shimmer 3s ease infinite;
+}
+@keyframes shimmer {
+  0%,100% { opacity: .3; transform: scaleX(.3); }
+  50%      { opacity: 1;  transform: scaleX(1); }
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.cycle-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--dim);
+}
+.phase-badge {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--cyan);
+  border: 1px solid rgba(0,229,255,0.3);
+  padding: 2px 8px;
+}
+.phase-badge.pump    { color: var(--yellow); border-color: rgba(255,230,0,0.35); }
+.phase-badge.settled { color: var(--red);    border-color: rgba(255,45,107,0.35); }
+
+/* ── Status message ── */
+.status-msg {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--dim);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/* ── Countdown ── */
+.countdown {
+  font-family: var(--display);
+  font-size: 44px;
+  letter-spacing: 3px;
+  color: var(--cyan);
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 4px;
+  transition: color .4s;
+}
+.countdown.urgent { color: var(--red); }
+
+/* ── Vibecoin row ── */
+.vibecoin-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+.token-img {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,229,255,0.2);
+  object-fit: cover;
+  background: rgba(0,229,255,0.04);
+  flex-shrink: 0;
+}
+.token-info { flex: 1; min-width: 0; }
+.token-name {
+  font-family: var(--display);
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: var(--text);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.token-symbol {
+  font-size: 9px;
+  color: var(--dim);
+  letter-spacing: 2px;
+  margin-top: 2px;
+}
+.token-price {
+  text-align: right;
+  flex-shrink: 0;
+}
+.price-label { font-size: 9px; letter-spacing: 2px; color: var(--dim); }
+.price-value {
+  font-family: var(--display);
+  font-size: 16px;
+  color: var(--yellow);
+  letter-spacing: 1px;
+}
+
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid rgba(0,229,255,0.08);
+  margin: 10px 0;
+}
+
+/* ── Stats ── */
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 5px 0;
+}
+.stat-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--dim);
+  overflow-wrap: anywhere;
+}
+.stat-value {
+  font-family: var(--display);
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: var(--cyan);
+}
+.stat-value.yellow { color: var(--yellow); }
+.stat-value.red    { color: var(--red); }
+.stat-value.addr {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text);
+  letter-spacing: 0;
+}
+
+/* ── Footer ── */
+.footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+.pulse {
+  display: inline-block;
+  width: 5px; height: 5px;
+  background: var(--cyan);
+  border-radius: 50%;
+  animation: blink 2s ease infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.pulse.err { background: var(--red); }
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .2; }
+}
+</style>
+</head>
+<body>
+<div class="widget" id="widget">
+  <div class="header">
+    <span class="cycle-label" id="cycleLabel">ROUND —</span>
+    <span class="phase-badge" id="phaseBadge">...</span>
+  </div>
+  <div id="content"><div class="status-msg">CONNECTING</div></div>
+  <div class="footer">
+    <span><span class="pulse" id="pulse"></span><span id="footerStatus">—</span></span>
+    <a href="./rugpad_testnet/" target="_top"
+       style="color:var(--cyan);letter-spacing:2px;font-size:9px;">
+      OPEN APP (TESTNET) →
+    </a>
+  </div>
+</div>
+
+<script>
+'use strict';
+const RPC    = 'https://testnet-rpc.monad.xyz';
+const RUGPAD = '0x24654BBcE7984E968a293671A404d79a7aDf2D57';
+const SHMON  = '0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9';
+const FOMON  = '0x0f3Ed63A647A71bd57657c105A4d171A535E9A68';
+const SEL_GAMESTATE    = '0x2e2d1e56'; // gameState(bool)
+const SEL_PREVIEW      = '0x91767552'; // previewUnstake(uint256)
+const SEL_AIRDROP_MINTED = '0x56eb4654'; // totalAirdropMinted()
+const SEL_DEPLOY_TS    = '0x607ad0d7'; // deployTimestamp()
+const SEL_MAX_MINTABLE = '0xa3b619fe'; // maxMintable(uint256)
+const ZERO_ADDR     = '0x' + '0'.repeat(40);
+const ONE_ETHER     = 10n ** 18n;
+const PHASE_LABELS  = ['INSIDERS ONLY', 'PRE-PUMP', 'PUMPING', 'RUGGED'];
+
+let state        = null;
+let shmonRate    = 0n;
+let tokenMeta    = null;
+let cdTimer      = null;
+let initialized  = false;
+let deployTs     = 0;   // cached deployTimestamp (seconds, never changes)
+let airdropLeft  = null; // BigInt, foMON wei remaining until phase end
+let refreshTimer = null;
+
+const channel = typeof BroadcastChannel !== 'undefined'
+  ? new BroadcastChannel('fomonad-gamestate') : null;
+
+// BigInt fields that need string serialization over BroadcastChannel
+const BIGINT_FIELDS = ['vibecoinPrice', 'prizePool', 'totalDeposited'];
+
+function serializeForBroadcast() {
+  const s = { ...state };
+  for (const k of BIGINT_FIELDS) s[k] = s[k].toString();
+  return {
+    state: s,
+    shmonRate: shmonRate.toString(),
+    airdropLeft: airdropLeft !== null ? airdropLeft.toString() : null,
+    tokenMeta,
+    deployTs,
+  };
+}
+
+function applyBroadcast(d) {
+  const s = { ...d.state };
+  for (const k of BIGINT_FIELDS) s[k] = BigInt(s[k]);
+  state       = s;
+  shmonRate   = BigInt(d.shmonRate);
+  airdropLeft = d.airdropLeft !== null ? BigInt(d.airdropLeft) : null;
+  tokenMeta   = d.tokenMeta;
+  deployTs    = d.deployTs;
+  initialized = true;
+}
+
+if (channel) {
+  channel.onmessage = e => {
+    applyBroadcast(e.data);
+    renderWidget();
+    if (state.phaseEndTime > 0) startCountdown(state.phaseEndTime);
+    document.getElementById('pulse').className = 'pulse';
+    document.getElementById('footerStatus').textContent =
+      "LAST UPDATED " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    scheduleRefresh(); // reset our timer — no need to fetch this cycle
+  };
+}
+
+// ─── RPC ─────────────────────────────────────────────────────
+
+async function ethCall(to, data) {
+  const res = await fetch(RPC, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_call',
+                           params: [{ to, data }, 'latest'] })
+  });
+  const j = await res.json();
+  if (j.error) throw new Error(j.error.message);
+  return j.result;
+}
+
+// ─── ABI decoders ────────────────────────────────────────────
+// Return data layout for gameState (struct with a string → dynamic tuple):
+//   slot 0  : outer offset = 0x20
+//   slot 1  : phase        (uint8)
+//   slot 2  : phaseEndTime (uint256)
+//   slot 3  : vibecoin     (address)
+//   slot 4  : vibecoinPrice(uint256)
+//   slot 5  : vibecoinURI  offset from tuple-start (= 9*32 = 288 = 0x120)
+//   slot 6  : prizePool    (uint256)
+//   slot 7  : totalDeposited (uint256)
+//   slot 8  : cycle        (uint256)
+//   slot 9  : lastBuyer    (address)
+//   slot 10 : string length (0 when getVibecoinURI=false)
+//   slot 11+: string bytes  (padded to 32-byte blocks)
+
+function slotAt(hex, i) { return hex.slice(i * 64, (i + 1) * 64); }
+
+function decodeGameState(raw) {
+  const h = raw.slice(2); // strip 0x
+  const sl = i => slotAt(h, i);
+  const T = 1; // tuple base (after outer offset at slot 0)
+
+  const phase          = parseInt(sl(T),   16);
+  const phaseEndTime   = parseInt(sl(T+1), 16); // unix ts fits in Number
+  const vibecoin       = '0x' + sl(T+2).slice(24);
+  const vibecoinPrice  = BigInt('0x' + sl(T+3));
+  const uriOffsetBytes = parseInt(sl(T+4), 16); // bytes from tuple-start
+  const prizePool      = BigInt('0x' + sl(T+5));
+  const totalDeposited = BigInt('0x' + sl(T+6));
+  const cycle          = parseInt(sl(T+7), 16);
+  const lastBuyer      = '0x' + sl(T+8).slice(24);
+
+  // String: length slot at (tuple-base + uriOffset/32)
+  const strBase = T + uriOffsetBytes / 32;
+  const strLen  = parseInt(sl(strBase), 16);
+  let vibecoinURI = '';
+  if (strLen > 0) {
+    let hexStr = '';
+    for (let i = 0; i < Math.ceil(strLen / 32); i++) hexStr += sl(strBase + 1 + i);
+    vibecoinURI = decodeURIComponent(
+      hexStr.slice(0, strLen * 2).replace(/../g, '%$&')
+    );
+  }
+
+  return { phase, phaseEndTime, vibecoin, vibecoinPrice,
+           prizePool, totalDeposited, cycle, lastBuyer, vibecoinURI };
+}
+
+function decodeUint256(raw) { return BigInt(raw); }
+
+// ─── Formatting ──────────────────────────────────────────────
+
+function shmonToMON(wei) {
+  if (!shmonRate) return '—';
+  const monWei = wei * shmonRate / ONE_ETHER;
+  const val    = Number(monWei) / 1e18;
+  return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + ' MON';
+}
+
+const SUBS = '₀₁₂₃₄₅₆₇₈₉';
+function toSub(n) { return String(n).split('').map(c => SUBS[c]).join(''); }
+
+// Like shmonToMON but uses CMC-style subscript notation for tiny prices.
+// e.g. 0.000001234 → "0.0₄1234 MON"
+function shmonToMONPrice(wei) {
+  if (!shmonRate) return '—';
+  const monWei = wei * shmonRate / ONE_ETHER;
+  const val    = Number(monWei) / 1e18;
+  if (val === 0) return '0 MON';
+
+  if (val > 0 && val < 0.0001) {
+    const afterDecimal = val.toFixed(20).split('.')[1]; // lots of precision
+    let leadingZeros = 0;
+    for (const c of afterDecimal) { if (c === '0') leadingZeros++; else break; }
+    if (leadingZeros >= 4) {
+      const sigDigits = afterDecimal.slice(leadingZeros).replace(/0+$/, '').slice(0, 4) || '0';
+      // 0.0 accounts for 1 zero, subscript covers the rest
+      return `0.0${toSub(leadingZeros - 1)}${sigDigits} MON`;
+    }
+  }
+
+  return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 }) + ' MON';
+}
+
+function fmtAddr(addr) {
+  return addr.slice(0, 6) + '…' + addr.slice(-4);
+}
+
+function fmtCountdown(totalSecs) {
+  if (totalSecs <= 0) return '00:00:00';
+  if (totalSecs > 36 * 3600) {
+    const d = Math.floor(totalSecs / 86400);
+    const h = Math.floor((totalSecs % 86400) / 3600);
+    const m = Math.floor((totalSecs % 3600) / 60);
+    const s = totalSecs % 60;
+    return `${d}D ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  const h = Math.floor(totalSecs / 3600);
+  const m = Math.floor((totalSecs % 3600) / 60);
+  const s = totalSecs % 60;
+  return [h, m, s].map(n => String(n).padStart(2, '0')).join(':');
+}
+
+// ─── Token metadata ──────────────────────────────────────────
+
+async function resolveTokenMeta(uri) {
+  if (!uri) return null;
+  try {
+    let json;
+    if (uri.startsWith('data:')) {
+      const b64i = uri.indexOf('base64,');
+      const str  = b64i >= 0 ? atob(uri.slice(b64i + 7))
+                              : decodeURIComponent(uri.split(',')[1] ?? '');
+      json = JSON.parse(str);
+    } else if (uri.startsWith('ipfs://')) {
+      const res = await fetch('https://ipfs.io/ipfs/' + uri.slice(7));
+      json = await res.json();
+    } else {
+      const res = await fetch(uri);
+      json = await res.json();
+    }
+    return json;
+  } catch { return null; }
+}
+
+function resolveImage(url) {
+  if (!url) return null;
+  if (url.startsWith('ipfs://')) return 'https://ipfs.io/ipfs/' + url.slice(7);
+  return url;
+}
+
+// ─── Data fetching ───────────────────────────────────────────
+
+async function fetchShmonRate() {
+  const arg = ONE_ETHER.toString(16).padStart(64, '0');
+  const raw = await ethCall(SHMON, SEL_PREVIEW + arg);
+  shmonRate = decodeUint256(raw);
+}
+
+async function fetchState(withURI) {
+  const flag = withURI ? '1' : '0';
+  const data = SEL_GAMESTATE + flag.padStart(64, '0');
+  return decodeGameState(await ethCall(RUGPAD, data));
+}
+
+async function fetchAirdrop(phaseEndTime) {
+  if (!deployTs) {
+    deployTs = Number(decodeUint256(await ethCall(FOMON, SEL_DEPLOY_TS)));
+  }
+  const tEnd = Math.max(0, phaseEndTime - deployTs);
+  const tEndHex = BigInt(tEnd).toString(16).padStart(64, '0');
+  const [rawMinted, rawMax] = await Promise.all([
+    ethCall(FOMON, SEL_AIRDROP_MINTED),
+    ethCall(FOMON, SEL_MAX_MINTABLE + tEndHex),
+  ]);
+  const minted = decodeUint256(rawMinted);
+  const max    = decodeUint256(rawMax);
+  return max > minted ? max - minted : 0n;
+}
+
+// ─── Rendering ───────────────────────────────────────────────
+
+function renderWidget() {
+  const st    = state;
+  const phase = st.phase;
+  const now   = Math.floor(Date.now() / 1000);
+  const secs  = Math.max(0, st.phaseEndTime - now);
+
+  document.getElementById('cycleLabel').textContent = `ROUND ${st.cycle}`;
+
+  const badge = document.getElementById('phaseBadge');
+  badge.textContent = PHASE_LABELS[phase] ?? '?';
+  badge.className   = 'phase-badge' +
+    (phase === 2 ? ' pump' : phase === 3 ? ' settled' : '');
+
+  let html = '';
+
+  if (phase === 0 && st.phaseEndTime === 0) {
+    // Not yet started
+    html += `<div class="status-msg">AWAITING INSIDERS</div>`;
+    html += divider();
+    html += statsHtml(st);
+
+  } else if (phase === 0) {
+    // SERIES_A — waiting for series B to open
+    html += `<div class="status-msg">PUBLIC PRE-SALE OPENS IN</div>`;
+    html += `<div class="countdown${secs < 300 ? ' urgent' : ''}" id="cd">${fmtCountdown(secs)}</div>`;
+    html += divider();
+    html += statsHtml(st);
+
+  } else if (phase === 1) {
+    // SERIES_B
+    html += `<div class="status-msg">PRE-SALE ENDS IN</div>`;
+    html += `<div class="countdown${secs < 300 ? ' urgent' : ''}" id="cd">${fmtCountdown(secs)}</div>`;
+    html += divider();
+    html += statsHtml(st);
+
+  } else if (phase === 2) {
+    // PUMP
+    if (st.vibecoin !== ZERO_ADDR || tokenMeta) html += vibecoinHtml(st);
+    html += divider();
+    html += `<div class="status-msg">VIBECOIN WILL BE RUGGED IN</div>`;
+    html += `<div class="countdown${secs < 300 ? ' urgent' : ''}" id="cd">${fmtCountdown(secs)}</div>`;
+    html += `<div class="status-msg">*every buy extends the timer and unlocks more foMON</div>`;
+    html += divider();
+    html += statsHtml(st, true, false, airdropLeft);
+
+  } else if (phase === 3) {
+    // SETTLED
+    if (st.vibecoin !== ZERO_ADDR || tokenMeta) html += vibecoinHtml(st);
+    html += divider();
+    html += `<div class="status-msg">Vibecoin has been rugged.</div>`;
+    html += divider();
+    html += statsHtml(st, true, true);
+  }
+
+  document.getElementById('content').innerHTML = html;
+  postHeight();
+}
+
+function divider() { return `<hr class="divider">`; }
+
+function vibecoinHtml(st) {
+  const meta   = tokenMeta;
+  const name   = meta?.name   || fmtAddr(st.vibecoin);
+  const symbol = meta?.symbol || '';
+  const imgSrc = resolveImage(meta?.image);
+  const imgTag = imgSrc
+    ? `<img class="token-img" src="${imgSrc}" alt="" onerror="this.style.display='none'">`
+    : `<div class="token-img"></div>`;
+
+  const hasPump = st.phase === 2 && st.vibecoinPrice > 0n;
+  const priceHtml = hasPump
+    ? `<div class="token-price">
+         <div class="price-label">PRICE</div>
+         <div class="price-value">${shmonToMONPrice(st.vibecoinPrice)}</div>
+       </div>`
+    : '';
+
+  return `<div class="vibecoin-row">
+    ${imgTag}
+    <div class="token-info">
+      <div class="token-name">${escHtml(name)}</div>
+      ${symbol ? `<div class="token-symbol">${escHtml(symbol)}</div>` : ''}
+    </div>
+    ${priceHtml}
+  </div>`;
+}
+
+function fmtFoMON(wei) {
+  const val = Number(wei) / 1e18;
+  return val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + ' foMON';
+}
+
+function statsHtml(st, showLastBuyer = false, isSettled = false, airdrop = null) {
+  const prizeWei   = st.prizePool * 9n / 10n;
+  const prizeLabel = isSettled ? 'WINNER\'S PRIZE' : 'RUGPULL REWARD';
+
+  let html = `
+    <div class="stat-row">
+      <span class="stat-label">${prizeLabel}</span>
+      <span class="stat-value">${shmonToMON(prizeWei)}</span>
+    </div>`;
+  if (showLastBuyer && st.lastBuyer !== ZERO_ADDR) {
+    const label = isSettled ? 'WINNER' : 'RUGPULLER <wbr>(THIS CAN BE YOU)';
+    html += `<div class="stat-row">
+      <span class="stat-label">${label}</span>
+      <span class="stat-value addr">${escHtml(fmtAddr(st.lastBuyer))}</span>
+    </div>`;
+  }
+  if (airdrop !== null) {
+    html += `<div class="stat-row">
+      <span class="stat-label">MAX AIRDROP BEFORE RUG</span>
+      <span class="stat-value yellow">${fmtFoMON(airdrop)}</span>
+    </div>`;
+  }
+  html += `<div class="stat-row">
+    <span class="stat-label">TOTAL DEPOSITED</span>
+    <span class="stat-value yellow">${shmonToMON(st.totalDeposited)}</span>
+  </div>`;
+  return html;
+}
+
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
+}
+
+// ─── Countdown tick ──────────────────────────────────────────
+
+function startCountdown(endTime) {
+  if (cdTimer) clearInterval(cdTimer);
+  cdTimer = setInterval(() => {
+    const el = document.getElementById('cd');
+    if (!el) return;
+    const secs = Math.max(0, endTime - Math.floor(Date.now() / 1000));
+    el.textContent = fmtCountdown(secs);
+    el.classList.toggle('urgent', secs < 300);
+  }, 1000);
+}
+
+// ─── Iframe height sync ──────────────────────────────────────
+
+function postHeight() {
+  const h = document.getElementById('widget').offsetHeight;
+  parent.postMessage({ type: 'fomonad-widget-height', height: h }, '*');
+}
+
+// ─── Main refresh loop ───────────────────────────────────────
+
+async function refresh() {
+  try {
+    let newState;
+
+    if (!initialized) {
+      await fetchShmonRate();
+      newState    = await fetchState(true); // get URI on first load
+      initialized = true;
+    } else {
+      newState = await fetchState(false);
+      // Phase transitioned into pump/settled — need URI now
+      if (newState.phase !== state.phase && newState.phase >= 2) {
+        newState = await fetchState(true);
+      }
+    }
+
+    const phaseChanged = !state || newState.phase !== state.phase;
+    state = newState;
+
+    if (phaseChanged) {
+      tokenMeta = (state.phase >= 2 && state.vibecoinURI)
+        ? await resolveTokenMeta(state.vibecoinURI)
+        : null;
+      if (state.phase !== 2) airdropLeft = null;
+    }
+
+    if (state.phase === 2) {
+      airdropLeft = await fetchAirdrop(state.phaseEndTime);
+    }
+
+    renderWidget();
+    if (state.phaseEndTime > 0) startCountdown(state.phaseEndTime);
+
+    if (channel) channel.postMessage(serializeForBroadcast());
+
+    document.getElementById('pulse').className = 'pulse';
+    document.getElementById('footerStatus').textContent =
+      "LAST UPDATED " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  } catch (err) {
+    console.error('[fomonad widget]', err);
+    document.getElementById('pulse').className = 'pulse err';
+    document.getElementById('footerStatus').textContent = 'RPC ERROR';
+  }
+  scheduleRefresh();
+}
+
+function scheduleRefresh() {
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(refresh, 10000);
+}
+
+setTimeout(refresh, Math.random() * 2000);
+</script>
+</body>
+</html>
