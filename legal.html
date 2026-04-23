@@ -174,9 +174,11 @@ a:hover {
 <nav>
   <div class="nav-logo"><a href="/"><span class="fo">Fo</span><span class="mo">Mo</span><span class="nad">nad</span></a></div>
   <div class="nav-links">
-    <a href="/#howto">how to play</a>
+    <a href="/#vibecoin">vibecoins</a>
     <a href="/#mechanics">mechanics</a>
+    <a href="/#referrals">referral program</a>
     <a href="/#state_of_the_art">state of the art</a>
+    <a href="/#auteurs">visionaries</a>
     <a href="/#links">talk to us</a>
   </div>
   <div class="nav-right">
@@ -218,8 +220,8 @@ a:hover {
     <div class="legal-section-label">// 01</div>
     <h2 class="legal-section-title">WHAT <span class="accent-c">FOMONAD</span> IS</h2>
     <div class="legal-prose">
-      <p>FoMonad is an autonomous protocol deployed on the Monad blockchain. It is not a company, not a service, and not operated by any identifiable legal entity. There is no CEO, no support team, no dispute resolution mechanism. There are smart contracts.</p>
-      <p>The contracts are <strong>immutable</strong>: no owner functions, no upgrade mechanism, no kill switch. What is deployed is what runs. The protocol executes as written, regardless of outcome.</p>
+      <p>FoMonad is an autonomous protocol deployed on the Monad blockchain. It is not a company, not a service, and not operated by any identifiable legal entity. There is no CEO, no support team, no dispute resolution mechanism. There are smart-contracts.</p>
+      <p>The smart-contracts are <strong>immutable</strong>: no owner functions, no upgrade mechanism, no kill switch. What is deployed is what runs. The protocol executes as written, regardless of outcome.</p>
       <p>If you are looking for someone to contact about a lost transaction, there is a Telegram and a Discord. There is no legal address. There is no entity that can reverse what happened.</p>
     </div>
   </section>
@@ -247,7 +249,7 @@ a:hover {
     <div class="legal-section-label">// 03</div>
     <h2 class="legal-section-title">WHAT YOU <span class="accent-c">ACCEPT</span></h2>
     <div class="legal-callout">
-      By connecting your wallet and interacting with FoMonad contracts, you confirm that you have read this document, understood it, and chosen to participate anyway.
+      By connecting your wallet and interacting with FoMonad smart-contracts, you confirm that you have read this document, understood it, and chosen to participate anyway.
     </div>
     <div class="legal-prose">
       <p>Specifically, you acknowledge:</p>
@@ -273,7 +275,7 @@ a:hover {
       <ul>
         <li><strong>foMON supply:</strong> 80% of total supply (80,000,000 foMON) was minted to the deployer at contract deployment. This is intentional — it is explicit commentary on standard practices in the crypto industry. It is a feature, not an oversight.</li>
         <li><strong>Insider (first pre-sale) access:</strong> The first phase of each cycle requires holding a non-zero foMON balance. The deployer controls 80% of the supply at launch. Insider participants get a better bonding curve entry price.</li>
-        <li><strong>Airdrop reserve:</strong> The remaining 20% is emitted over approximately 9 months via a sigmoid curve, distributed randomly during public phase interactions.</li>
+        <li><strong>Airdrop reserve:</strong> The remaining 20% is emitted over time via a sigmoid curve, distributed randomly during public phase interactions, with the mint rate peaking at approximately 3 months and decelerating indefinitely thereafter.</li>
         <li><strong>foMON dividends:</strong> Holders who opt in receive a proportional share of protocol fees (4% of all deposits), denominated in shMON. This yield is real, variable, and not guaranteed. It depends entirely on protocol volume.</li>
       </ul>
       <p>You now have more information about this project's insider structure than most crypto investors had about the projects they funded.</p>
@@ -345,7 +347,7 @@ a:hover {
     <div class="legal-section-label">// 09</div>
     <h2 class="legal-section-title">NOT <span class="accent-r">ADVICE</span></h2>
     <div class="legal-prose">
-      <p>Nothing on fomonad.wtf, in this document, in the contracts, in any social media post, or in any FoMonad-affiliated communication constitutes financial, investment, tax, or legal advice.</p>
+      <p>Nothing on fomonad.wtf, in this document, in the smart-contracts, in any social media post, or in any FoMonad-affiliated communication constitutes financial, investment, tax, or legal advice.</p>
       <p>This is a game. The house always wins — and in this case, the house is a deterministic smart contract that has already decided when the rug happens. Play accordingly.</p>
     </div>
   </section>
@@ -359,9 +361,9 @@ a:hover {
     <div class="legal-prose">
       <p>FoMonad collects no personal data unless you choose to link your Discord account. Here is what does happen:</p>
       <ul>
-        <li><strong>On-chain activity:</strong> Every transaction you make with FoMonad contracts is recorded permanently on the Monad blockchain. Wallet addresses, amounts, timestamps, and referral relationships are publicly visible to anyone. This is not a FoMonad disclosure — this is how blockchains work.</li>
-        <li><strong>Wallet connection:</strong> When you connect your wallet, your address is read locally by your browser via your wallet extension. It is not transmitted to any FoMonad server. There are no FoMonad servers.</li>
-        <li><strong>LocalStorage:</strong> Your browser's local storage is used to persist your active referral code across page visits. No other data is stored locally. This data never leaves your device.</li>
+        <li><strong>On-chain activity:</strong> Every transaction you make with FoMonad smart-contracts is recorded permanently on the Monad blockchain. Wallet addresses, amounts, timestamps, and referral relationships are publicly visible to anyone. This is not a FoMonad disclosure — this is how blockchains work.</li>
+        <li><strong>Wallet connection:</strong> When you connect your wallet, your address is read locally by your browser via your wallet extension. It is not transmitted to any FoMonad server. There are no FoMonad servers running this game.</li>
+        <li><strong>LocalStorage:</strong> Your browser's local storage is used to persist your active referral code across page visits. This data only leaves your device when you submit a public transcation to the FoMonad smart-contracts which accept a referral code.</li>
         <li><strong>Hosting:</strong> The fomonad.wtf website may be served from standard web infrastructure that logs IP addresses, pages requested, and timestamps. If served via IPFS, no such logs exist at the protocol level, though individual gateways may have their own logging. We do not control or access gateway logs.</li>
         <li><strong>Google Fonts:</strong> This page loads fonts from Google's CDN. Google's standard font API privacy terms apply to that request. No other third-party scripts, pixels, or analytics are loaded.</li>
         <li><strong>Discord integration (optional):</strong> If you choose to link your Discord account for role assignment, your Discord user ID and wallet address are stored in association on FoMonad infrastructure. This is the only personal data FoMonad collects. It is used to assign roles based on participation and to generate shareable stats cards on request. It is never sold or shared with third parties. You may unlink at any time, after which the association is deleted. Note that combining a wallet address with a Discord identity creates a potential deanonymization vector — your on-chain activity may become attributable to your Discord identity. This is a consequence of optional linking, not a FoMonad data practice. Discord's own privacy policy governs their handling of your account data.</li>

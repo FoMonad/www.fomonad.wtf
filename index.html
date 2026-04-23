@@ -306,8 +306,9 @@ section.full-bleed {
   color: var(--text);
 }
 
-.section-title .accent-c { color: var(--cyan); }
-.section-title .accent-r { color: var(--red); }
+.accent-c { color: var(--cyan); }
+.accent-r { color: var(--red); }
+.accent-y { color: var(--yellow); }
 
 .divider {
   width: 100%;
@@ -316,6 +317,104 @@ section.full-bleed {
   margin: 0 40px;
   max-width: calc(100% - 80px);
 }
+
+/* ─── 3 WAYS TO WIN ─── */
+.win-grid-heading {
+  font-family: var(--display);
+  font-size: clamp(22px,3vw,36px);
+  text-align: center;
+  letter-spacing: 3px;
+  color: var(--text);
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+
+.win-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 60px;
+}
+
+.win-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid rgba(0,229,255,0.12);
+  padding: 28px 24px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s, background .2s;
+}
+.win-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.win-card:hover { background: rgba(255,255,255,0.02); }
+.win-card:hover::before { opacity: 1; }
+
+.win-card.c { border-color: rgba(0,229,255,0.15); }
+.win-card.c::before { background: var(--cyan); }
+.win-card.c:hover { border-color: rgba(0,229,255,0.35); }
+
+.win-card.r { border-color: rgba(255,45,107,0.15); }
+.win-card.r::before { background: var(--red); }
+.win-card.r:hover { border-color: rgba(255,45,107,0.35); }
+
+.win-card.y { border-color: rgba(255,230,0,0.15); }
+.win-card.y::before { background: var(--yellow); }
+.win-card.y:hover { border-color: rgba(255,230,0,0.35); }
+
+.win-card-icon {
+  position: absolute;
+  bottom: -2px; right: 12px;
+  width: 72px; height: 72px;
+  opacity: .07;
+}
+.win-card.c .win-card-icon { color: var(--cyan); }
+.win-card.r .win-card-icon { color: var(--red); }
+.win-card.y .win-card-icon { color: var(--yellow); }
+
+.win-card:hover .win-card-icon { opacity: 0.4; }
+
+.win-card-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.win-card-title {
+  font-family: var(--display);
+  font-size: 26px;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+.win-card.c .win-card-title { color: var(--cyan); }
+.win-card.r .win-card-title { color: var(--red); }
+.win-card.y .win-card-title { color: var(--yellow); }
+
+.win-card-body {
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+.win-card-aside {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) { .win-grid { grid-template-columns: 1fr; } }
 
 /* ─── HOW TO PLAY ─── */
 #howto {
@@ -1426,6 +1525,7 @@ a.table-cite:hover { color: var(--cyan); }
   <div class="nav-links">
     <a href="#vibecoin">vibecoins</a>
     <a href="#mechanics">mechanics</a>
+    <a href="#referrals">referral program</a>
     <a href="#state_of_the_art">state of the art</a>
     <a href="#auteurs">visionaries</a>
     <a href="#links">talk to us</a>
@@ -1498,11 +1598,53 @@ a.table-cite:hover { color: var(--cyan); }
     <div class="section-num">// 01</div>
     <div class="section-title">HOW TO <span class="accent-c">PLAY</span></div>
     <p style="margin-top:20px; font-size:15px; color:var(--dim);">
-      This self-aware satirical launchpad is better designed and more fair than almost all other crypto projects.
+      All the fun of crypto. None of the pretending.
     </p>
   </div>
 
+  <!-- 3 Ways to Win -->
+  <div class="win-grid-heading">3 WAYS TO <span class="accent-c">WIN</span></div>
+  <div class="win-grid">
+
+    <a class="win-card c" href="#vibecoin">
+      <div class="win-card-num">// 01</div>
+      <div class="win-card-title">HODL VIBECOIN</div>
+      <div class="win-card-body">Every Vibecoin holder gets a cut of every buy and sell.</div>
+      <div class="win-card-aside">Unlike every other memecoin,<br>which doesn't reward you at all.</div>
+      <svg class="win-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
+        <polygon points="12,2 22,12 12,22 2,12"/>
+        <polygon points="12,6 18,12 12,18 6,12"/>
+      </svg>
+    </a>
+
+    <a class="win-card r" href="#mechanics">
+      <div class="win-card-num">// 02</div>
+      <div class="win-card-title">PULL THE RUG</div>
+      <div class="win-card-body">Last one to buy the Vibecoin before selling unlocks gets up to 21% of the pump volume.</div>
+      <div class="win-card-aside">The community chooses who pulls<br>the rug — not the developers.</div>
+      <svg class="win-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
+        <path d="M5,2 H19 L12,11 L19,22 H5 L12,11 Z"/>
+        <line x1="5" y1="2" x2="19" y2="2"/>
+        <line x1="5" y1="22" x2="19" y2="22"/>
+      </svg>
+    </a>
+
+    <a class="win-card y" href="#referrals">
+      <div class="win-card-num">// 03</div>
+      <div class="win-card-title">SHILL FOMONAD</div>
+      <div class="win-card-body">Register a referral code to get 6% of the pump volume.</div>
+      <div class="win-card-aside">Yet another way to extract value<br>from your audience.</div>
+      <svg class="win-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
+        <path d="M3,8 H8 L18,3 V21 L8,16 H3 V8 Z"/>
+        <path d="M8,16 V20"/>
+        <path d="M20,8 Q23,12 20,16"/>
+      </svg>
+    </a>
+
+  </div>
+
   <!-- Game loop flow -->
+  <div class="win-grid-heading">THE <span class="accent-r">IMMUTABLE</span> CYCLE</div>
   <div class="game-loop">
     <div class="loop-step ls-a">
       <div class="loop-step-num">// 01</div>
@@ -1537,7 +1679,7 @@ a.table-cite:hover { color: var(--cyan); }
     <div class="loop-footer-label">↺ 10% SEEDS THE NEXT ROUND — THE CYCLE RESTARTS.</div>
   </div>
 
-  <div class="howto-step-header", id="vibecoin">THE VIBECOIN</div>
+  <div class="howto-step-header", id="vibecoin">THE <span class="accent-c">VIBECOIN</span></div>
 
   <div class="mechanic-desc" style="margin-top:16px; margin-bottom:8px;">
     Every round mints a new Vibecoin. Its name, ticker, and logo are randomly generated on-chain. It is then inevitably forgotten; bloating the Monad data store until the end of time.
@@ -1574,15 +1716,16 @@ a.table-cite:hover { color: var(--cyan); }
     <div class="loop-footer-label">MORE LIQUID THAN ANYTHING IN YOUR PORTFOLIO.</div>
   </div>
 
-  <div class="howto-step-header" id="mechanics">THE ROUND</div>
+  <div class="howto-step-header" id="mechanics">THE <span class="accent-y">ROUND</span></div>
   <div class="section-num">// A MORE DETAILED LOOK AT WHAT ACTUALLY HAPPENS</div>
+  
   <div class="phases">
     <div class="phase-card reveal">
       <div class="phase-label">// PHASE 01</div>
       <div class="phase-title">THE INSIDERS</div>
       <div class="phase-duration">2 HOURS · EARLY ACCESS</div>
       <div class="phase-desc">
-        Private pre-sale. foMON holders only. Everyone gets an equal slice of the bottom floor.
+        Private pre-sale. foMON holders only. Everyone gets a proportional slice of the bottom floor. If you've contributed 10% of the pre-sale, you get 10% of the initial token mint at the same price as everyone else.
       </div>
     </div>
     <div class="phase-card reveal">
@@ -1590,23 +1733,23 @@ a.table-cite:hover { color: var(--cyan); }
       <div class="phase-title">THE "INSIDERS"</div>
       <div class="phase-duration">10 HOURS · OPEN</div>
       <div class="phase-desc">
-        Public pre-sale. Same curve, higher price. Exactly like a VC token launch, except we say so upfront.
+        Public pre-sale. Same curve, same proportional equal-price buy-in rules, higher price. Exactly like a VC token launch, except we say so upfront.
       </div>
     </div>
     <div class="phase-card reveal">
       <div class="phase-label">// PHASE 03</div>
       <div class="phase-title cyan">THE PUMP</div>
-      <div class="phase-duration">HYPE TIMER · ANY DURATION</div>
+      <div class="phase-duration">HYPE TIMER · SELLING LOCKED</div>
       <div class="phase-desc">
-        The initial price has been set. The timer counts down. Each buy mints the Vibecoin, increases its price, and contributes to the rugpull fund.<br>The more Vibecoins minted, the higher rugpull reward.
+        The initial price has been set. The timer counts down. Each buy mints the Vibecoin, increases its price, extends the timer, and contributes to the rugpull fund. The more Vibecoins minted, the higher rugpull reward.
       </div>
     </div>
     <div class="phase-card reveal">
       <div class="phase-label">// PHASE 04</div>
       <div class="phase-title red">THE RUGPULL</div>
-      <div class="phase-duration">TIMER HITS ZERO</div>
+      <div class="phase-duration">TIMER HITS ZERO · SELLING UNLOCKED</div>
       <div class="phase-desc">
-        Selling unlocks. Last buyer wins 90% of the rugpull fund. 10% seeds the next round. New Vibecoin. Repeat.
+        <span class="yellow">Last buyer wins 90%</span> of the <span class="red">rugpull fund</span>. 10% seeds the next round. New Vibecoin. Repeat.
       </div>
     </div>
   </div>
@@ -1675,6 +1818,79 @@ a.table-cite:hover { color: var(--cyan); }
     <div class="loop-footer-line"></div>
     <div class="loop-footer-label">ON-CHAIN. IMMUTABLE. DISCLOSED.</div>
   </div>
+
+ <div class="howto-step-header", id="referrals">THE <span class="accent-r">SHILLENOMICS</span></div>
+ <div class="section-num">// BECAUSE IT'S NOT AN EXTRACTIVE CRYPTO PROJECT WITHOUT A REFERRAL MECHANISM</div>
+ 
+ <div style="text-align:center; margin: 32px 0 40px;">
+  <div style="font-family:var(--mono); font-size:clamp(18px,4vw,34px); line-height:1; display:inline-flex; align-items:baseline; gap:0;">
+    <span style="color:var(--muted);">fomon.rip/</span><span style="display:inline-block; overflow:hidden; height:1.2em; min-width:14ch; vertical-align:baseline;"><span id="refSlot" style="text-align: left; display:block; color:var(--cyan); line-height:1.2;">shillmaster</span></span>
+  </div>
+ </div>
+
+ <div class="mechanic-desc" style="margin-bottom:12px;">
+  <p>
+    As shown above, registering a <span class="cyan">referral code</span> gets you a <span class="cyan">%6</span> commission <span class="yellow">of all buys</span> of the <span class="red">pre-rugged Vibecoin.</span>
+  </p>
+  <p>
+    To qualify, you would have needed to contribute at least 0.1% to one of the pre-sales, or hold more than 0.1% of the pre-rugged Vibecoin. That's it. There are no other requirements.
+  </p>
+ </div>
+
+ <script>
+ (function() {
+   const names = [
+     'shillmaster','gigadegen','disillusionary','rugpilled',
+     'pumpoooor','defi_jesus','airdropcel','moonmaxxer',
+     'ngmi_enjoyer','you'
+   ];
+   const YOU = 'you';
+   const el = document.getElementById('refSlot');
+   let idx = 0;
+
+   function slideTo(name, isYou) {
+     return new Promise(resolve => {
+       // slide out upward
+       el.style.transition = 'transform 0.08s ease-in, opacity 0.08s ease-in';
+       el.style.transform  = 'translateY(-110%)';
+       el.style.opacity    = '0';
+       setTimeout(() => {
+         // snap to below, swap text
+         el.style.transition = 'none';
+         el.style.transform  = 'translateY(110%)';
+         el.style.opacity    = '0';
+         el.textContent      = name;
+         el.style.color      = isYou ? 'var(--yellow)' : 'var(--cyan)';
+         // force reflow then slide in
+         el.getBoundingClientRect();
+         el.style.transition = 'transform 0.08s ease-out, opacity 0.08s ease-out';
+         el.style.transform  = 'translateY(0)';
+         el.style.opacity    = '1';
+         setTimeout(resolve, 80);
+       }, 80);
+     });
+   }
+
+   async function run() {
+     while (true) {
+       idx = (idx + 1) % names.length;
+       const name  = names[idx];
+       const isYou = name === YOU;
+       await slideTo(name, isYou);
+       await new Promise(r => setTimeout(r, isYou ? 4000 : 250));
+     }
+   }
+
+   // kick off after initial hold
+   setTimeout(run, 1000);
+ })();
+ </script>
+
+  <div class="loop-footer">
+    <div class="loop-footer-line"></div>
+    <div class="loop-footer-label">GET PAID TO DELAY THE INEVITABLE RUG.</div>
+  </div>
+
   <div class="howto-step-header" style="text-align: center; font-size: 32px;">YOU'RE NOW <span class="cyan">INFORMED</span>. GO GET <span class="red">RUGGED</span>.</div>
   <div style="margin-top:60px; text-align:center;">
     <iframe src="./gamestate.html" class="gamestate-widget"

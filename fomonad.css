@@ -311,7 +311,7 @@ html.glitch-on #glitch-noise-overlay {
 }
 
 /* ─── RESPONSIVE ─── */
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .nav-cta .cta-long { display: none; }
   .nav-cta .cta-short { display: inline; }
 }
