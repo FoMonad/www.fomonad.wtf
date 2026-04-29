@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Pink ghost arc + head — no translate; offset driven by WebGL uniform. -->
+<svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <path d="M 83 50 A 33 33 0 0 1 17 50" fill="none" stroke="#ff2d6b" stroke-width="9" opacity="0.15"/>
+  <polygon points="17,57 10,50 17,43 24,50" fill="#ff2d6b" opacity="0.2"/>
+</svg>

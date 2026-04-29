@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Static geometry reference — no filters, no animation, no web fonts.
+     Spin angle = 0 (sneks at their t=0 position).
+     Use this as the rasterization source for WebGL texture baking. -->
+<svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+
+  <!-- Background -->
+  <rect x="0" y="0" width="100" height="100" fill="#060608"/>
+
+  <!-- Glitch area base -->
+  <rect x="0" y="46" width="100" height="8" fill="#060608"/>
+
+  <!-- Glitch bars (resting/non-glitched position) -->
+  <rect x="0"  y="47" width="44" height="2"   fill="#ffe600" opacity="0.8"/>
+  <rect x="58" y="51" width="42" height="1.5" fill="#ffe600" opacity="0.55"/>
+  <rect x="40" y="49" width="22" height="1"   fill="#00e5ff" opacity="0.4"/>
+
+  <!-- ── SNEKS (spin group, angle=0) ───────────────────────────────────── -->
+  <!-- Ghost arcs (glitch offset copies, drawn at their resting transform) -->
+  <path d="M 17 50 A 33 33 0 0 1 83 50" fill="none" stroke="#00e5ff" stroke-width="9"
+        transform="translate(3,-2)" opacity="0.15"/>
+  <path d="M 83 50 A 33 33 0 0 1 17 50" fill="none" stroke="#ff2d6b" stroke-width="9"
+        transform="translate(-3,2)" opacity="0.15"/>
+
+  <!-- Main arcs: r=33, centre (50,50)
+       Cyan (PUMP) = top semicircle:  17→50→83 going CW through top
+       Pink (RUG)  = bottom semicircle: 83→50→17 going CW through bottom -->
+  <path d="M 17 50 A 33 33 0 0 1 50 17" fill="none" stroke="#00e5ff" stroke-width="5" opacity="0.5"/>
+  <path d="M 50 17 A 33 33 0 0 1 83 50" fill="none" stroke="#00e5ff" stroke-width="9"/>
+  <path d="M 83 50 A 33 33 0 0 1 50 83" fill="none" stroke="#ff2d6b" stroke-width="5" opacity="0.5"/>
+  <path d="M 50 83 A 33 33 0 0 1 17 50" fill="none" stroke="#ff2d6b" stroke-width="9"/>
+
+  <!-- Heads: diamond (rotated square) polygons -->
+  <!-- Cyan head: right side (83,50) -->
+  <polygon points="83,43 90,50 83,57 76,50" fill="#00e5ff"/>
+  <!-- Ghost cyan head -->
+  <polygon points="83,43 90,50 83,57 76,50" fill="#00e5ff" transform="translate(3,-2)" opacity="0.2"/>
+
+  <!-- Pink head: left side (17,50) -->
+  <polygon points="17,57 10,50 17,43 24,50" fill="#ff2d6b"/>
+  <!-- Ghost pink head -->
+  <polygon points="17,57 10,50 17,43 24,50" fill="#ff2d6b" transform="translate(-3,2)" opacity="0.2"/>
+
+  <!-- Eyes -->
+  <circle cx="86" cy="47" r="2" fill="#ffe600"/>
+  <circle cx="14" cy="53" r="2" fill="#ffe600"/>
+
+  <!-- ── TEXT (spin group, counter-rotating — at angle=0 both cancel) ─── -->
+  <text x="50" y="33" text-anchor="middle"
+        font-family="'Share Tech Mono',monospace" font-size="7"
+        fill="#00e5ff" letter-spacing="2.5" opacity="0.75">PUMP</text>
+  <text x="50" y="74" text-anchor="middle"
+        font-family="'Share Tech Mono',monospace" font-size="7"
+        fill="#ff2d6b" letter-spacing="3.5" opacity="0.75">RUG</text>
+
+  <!-- Centre dot -->
+  <circle cx="50" cy="50" r="4" fill="#ff2d6b"/>
+  <circle cx="50" cy="50" r="4" fill="#00e5ff" transform="translate(1.5,0)" opacity="0.45"/>
+
+  <!-- Scanlines (3px repeat, 1px dark band) -->
+  <pattern id="scanlinesPat" x="0" y="0" width="100" height="3" patternUnits="userSpaceOnUse">
+    <rect width="100" height="1" fill="black" opacity="0.25"/>
+  </pattern>
+  <rect x="0" y="0" width="100" height="100" fill="url(#scanlinesPat)" pointer-events="none"/>
+
+</svg>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- STATIC LAYER — background, glitch bars, centre dot, scanlines.
+     Never rotates. Composited on top of/below the spinning sneks layer. -->
+<svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+
+  <!-- Centre dot (doesn't spin — it's circular so it doesn't matter visually,
+       but keeping it static avoids unnecessary texture sampling) -->
+  <circle cx="50" cy="50" r="4" fill="#ff2d6b"/>
+  <circle cx="50" cy="50" r="4" fill="#00e5ff" transform="translate(1.5,0)" opacity="0.45"/>
+
+  <!-- Scanlines handled in WebGL shader (pass 3) -->
+
+</svg>

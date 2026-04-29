@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Cyan ghost arc + head — no translate; offset driven by WebGL uniform. -->
+<svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <path d="M 17 50 A 33 33 0 0 1 83 50" fill="none" stroke="#00e5ff" stroke-width="9" opacity="0.15"/>
+  <polygon points="83,43 90,50 83,57 76,50" fill="#00e5ff" opacity="0.2"/>
+</svg>

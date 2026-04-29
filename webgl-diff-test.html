@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>WebGL vs SVG diff</title>
+  <style>
+    body { margin: 0; background: #111; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 16px; font-family: monospace; color: #ccc; }
+    .row { display: flex; gap: 16px; align-items: flex-start; }
+    .cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .cell label { font-size: 12px; }
+    .box { width: 400px; height: 400px; background: #060608; position: relative; overflow: hidden; }
+    #ref-box { filter: blur(2px); }
+    canvas, img { width: 100%; height: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <div class="cell">
+      <label>REFERENCE (SVG + CSS blur)</label>
+      <div class="box" id="ref-box">
+        <img src="fomonad-animated-optimized.svg" alt="">
+      </div>
+    </div>
+
+    <div class="cell">
+      <label>WEBGL (fomonad-webgl.js)</label>
+      <div class="box hero-bg-logo">
+        <img src="fomonad-animated-optimized.svg" width="100%" height="100%" alt="">
+      </div>
+    </div>
+  </div>
+
+  <script src="fomonad-webgl.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- SNEKS ONLY — transparent background, no static elements.
+     This is the layer that spins in WebGL. Rasterised at 512x512. -->
+<svg viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+
+  <!-- Main arcs -->
+  <path d="M 17 50 A 33 33 0 0 1 50 17" fill="none" stroke="#00e5ff" stroke-width="5" opacity="0.5"/>
+  <path d="M 50 17 A 33 33 0 0 1 83 50" fill="none" stroke="#00e5ff" stroke-width="9"/>
+  <path d="M 83 50 A 33 33 0 0 1 50 83" fill="none" stroke="#ff2d6b" stroke-width="5" opacity="0.5"/>
+  <path d="M 50 83 A 33 33 0 0 1 17 50" fill="none" stroke="#ff2d6b" stroke-width="9"/>
+
+  <!-- Cyan head (right) -->
+  <polygon points="83,43 90,50 83,57 76,50" fill="#00e5ff"/>
+
+  <!-- Pink head (left) -->
+  <polygon points="17,57 10,50 17,43 24,50" fill="#ff2d6b"/>
+
+  <!-- Eyes -->
+  <circle cx="86" cy="47" r="2" fill="#ffe600"/>
+  <circle cx="14" cy="53" r="2" fill="#ffe600"/>
+
+</svg>
