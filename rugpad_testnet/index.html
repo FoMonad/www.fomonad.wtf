@@ -67,15 +67,40 @@
       position: relative;
       z-index: 1;
     }
+
+    #loading-spinner {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2rem;
+      font-family: var(--body);
+      z-index: 10000;
+    }
+
+    #loading-spinner::before {
+      content: '';
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid var(--border);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
-  <script type="module" crossorigin src="./assets/index-Dicen4uV.js"></script>
+  <script type="module" crossorigin src="./assets/index-QGgGoiZT.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/utils-B0Fw2xa_.js">
   <link rel="modulepreload" crossorigin href="./assets/localBatchGatewayRequest-BDnqlmbC.js">
 </head>
 <body>
-  <app-background></app-background>
-  <div id="app">
-    <app-root></app-root>
+  <div id="loading-spinner">
+    <span>Vibechecking... (JavaScript must be enabled)</span>
   </div>
 </body>
 </html>
