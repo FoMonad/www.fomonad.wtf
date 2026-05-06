@@ -17,6 +17,11 @@
   --mono:     'Share Tech Mono', monospace;
   --display:  'Bebas Neue', sans-serif;
   --body:     'DM Sans', sans-serif;
+
+  /* Derived colours */
+  --cyan-dim: color(from var(--cyan) srgb calc(r * 0.5) calc(g * 0.5) calc(b * 0.5));
+  --red-dim: color(from var(--red) srgb calc(r * 0.5) calc(g * 0.5) calc(b * 0.5));
+  --yellow-dim: color(from var(--yellow) srgb calc(r * 0.5) calc(g * 0.5) calc(b * 0.5));
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,6 +63,39 @@ a { color: inherit; text-decoration: underline; }
 .red   { color: var(--red); }
 .yellow{ color: var(--yellow); }
 .dim   { color: var(--dim); }
+
+.link-card {
+    --link-card-colour: var(--text);
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid color(from var(--link-card-colour) srgb r g b / 0.15);
+    background: color(from var(--link-card-colour) srgb r g b / 0.01);
+    transition: border-color .2s, background .2s, box-shadow .2s;
+    position: relative;
+}
+.link-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0;
+    transition: opacity .2s;
+    background: var(--link-card-colour);
+}
+.link-card:hover {
+  background: color(from var(--link-card-colour) srgb r g b / 0.04);
+  border-color: color(from var(--link-card-colour) srgb r g b / 0.45);
+}
+.link-card:hover::before { opacity: 0.45; }
+.link-card.c { --link-card-colour: var(--cyan); }
+.link-card.r { --link-card-colour: var(--red); }
+.link-card.y { --link-card-colour: var(--yellow); }
+.link-card.cd { --link-card-colour: var(--cyan-dim); }
+.link-card.rd { --link-card-colour: var(--red-dim); }
+.link-card.yd { --link-card-colour: var(--yellow-dim); }
+
+
 
 /* ─── NAV ─── */
 nav {
@@ -237,17 +275,6 @@ footer {
   letter-spacing: 0.5px;
   border-top: 1px solid rgba(255,255,255,0.04);
   padding-top: 24px;
-}
-
-/* ─── SCROLL REVEAL ─── */
-.reveal {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* ─── GLOBAL GLITCH ─── */

@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FoMonad: Automated crypto degeneracy</title>
-<meta name="description" content="A consensual rugpull on Monad. Every round: a new Vibecoin, a bonding curve, a timer, a prize pool. The rug is the product.">
+<meta name="description" content="A consensual rugpull on Monad. Every round: a new Vibecoin, a price curve, a timer, a prize pool. The rug is the product.">
 <link rel="icon" href="/fomonad-named.png" type="image/png">
 
 <!-- OpenGraph -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="FoMonad: Automated crypto degeneracy">
-<meta property="og:description" content="A consensual rugpull on Monad. Every round: a new Vibecoin, a bonding curve, a timer, a prize pool. The rug is the product.">
+<meta property="og:description" content="A consensual rugpull on Monad. Every round: a new Vibecoin, a price curve, a timer, a prize pool. The rug is the product.">
 <meta property="og:image" content="https://www.fomonad.wtf/fomonad-named.png">
 <meta property="og:url" content="https://www.fomonad.wtf/">
 
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:site" content="@fomonad_wtf">
 <meta name="twitter:title" content="FoMonad: Automated crypto degeneracy">
-<meta name="twitter:description" content="A consensual rugpull on Monad. Every round: a new Vibecoin, a bonding curve, a timer, a prize pool. The rug is the product.">
+<meta name="twitter:description" content="A consensual rugpull on Monad. Every round: a new Vibecoin, a price curve, a timer, a prize pool. The rug is the product.">
 <meta name="twitter:image" content="https://www.fomonad.wtf/fomonad-named.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -102,10 +102,17 @@ h1 {
   line-height: 0.9;
   margin-bottom: 8px;
   animation: fadeUp 0.8s 0.2s ease both;
+  font-weight: 600;
 }
 h1 .fo { color: var(--cyan); }
 h1 .mo { color: var(--cyan); }
 h1 .nad { color: var(--red); }
+h2 {
+  font-weight: 600;
+}
+h3 {
+  font-weight: normal;
+}
 
 .hero-sub {
   font-family: var(--display);
@@ -289,8 +296,6 @@ section.full-bleed {
   padding: 100px 40px;
 }
 
-.section-header { margin-bottom: 60px; }
-
 .section-num {
   font-family: var(--mono);
   font-size: 12px;
@@ -319,8 +324,35 @@ section.full-bleed {
   max-width: calc(100% - 80px);
 }
 
+/* ─── HERO BACKGROUND LOGO ─── */
+.hero-bg-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(2px);
+}
+
+.hero-bg-logo img,
+.hero-bg-logo > svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+@keyframes bgLogoGlitch {
+  0%, 88%, 100% { transform: translate(0,0);       opacity: 1;    filter: none; }
+  89%            { transform: translate(-4px, 2px); opacity: 0.4;  filter: blur(0.8px); }
+  91%            { transform: translate(3px, -1px); opacity: 0.85; filter: none; }
+  93%            { transform: translate(0,0);        opacity: 1; }
+}
+
 /* ─── 3 WAYS TO WIN ─── */
-.win-grid-heading {
+.howto-heading {
   font-family: var(--display);
   font-size: clamp(22px,3vw,36px);
   text-align: center;
@@ -328,6 +360,8 @@ section.full-bleed {
   color: var(--text);
   margin-bottom: 24px;
   border-bottom: 1px solid rgba(255,255,255,0.07);
+  /* Using padding instead of margin so the anchor jumps work better */
+  padding-top: 60px;
 }
 
 
@@ -335,47 +369,23 @@ section.full-bleed {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-bottom: 60px;
 }
 
 .win-card {
   display: block;
   text-decoration: none;
   color: inherit;
-  border: 1px solid rgba(0,229,255,0.12);
   padding: 28px 24px 24px;
   position: relative;
   overflow: hidden;
-  transition: border-color .2s, background .2s;
 }
-.win-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  opacity: 0;
-  transition: opacity .2s;
-}
-.win-card:hover { background: rgba(255,255,255,0.02); }
-.win-card:hover::before { opacity: 1; }
-
-.win-card.c { border-color: rgba(0,229,255,0.15); }
-.win-card.c::before { background: var(--cyan); }
-.win-card.c:hover { border-color: rgba(0,229,255,0.35); }
-
-.win-card.r { border-color: rgba(255,45,107,0.15); }
-.win-card.r::before { background: var(--red); }
-.win-card.r:hover { border-color: rgba(255,45,107,0.35); }
-
-.win-card.y { border-color: rgba(255,230,0,0.15); }
-.win-card.y::before { background: var(--yellow); }
-.win-card.y:hover { border-color: rgba(255,230,0,0.35); }
 
 .win-card-icon {
   position: absolute;
   bottom: -2px; right: 12px;
   width: 72px; height: 72px;
   opacity: .07;
+  transition: color .2s, opacity .2s;
 }
 .win-card.c .win-card-icon { color: var(--cyan); }
 .win-card.r .win-card-icon { color: var(--red); }
@@ -415,7 +425,16 @@ section.full-bleed {
   line-height: 1.5;
 }
 
-@media (max-width: 768px) { .win-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+  .win-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 768.01px) {
+  .hide-if-not-mobile {
+    display: none;
+  }
+}
 
 /* ─── HOW TO PLAY ─── */
 #howto {
@@ -427,48 +446,6 @@ section.full-bleed {
 #howto .inner {
   max-width: 1100px;
   margin: 0 auto;
-}
-
-.phases {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2px;
-  background: var(--muted);
-  margin-top: 60px;
-}
-
-.phase-card {
-  background: var(--bg2);
-  padding: 36px;
-}
-
-.phase-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 3px;
-  color: var(--dim);
-  margin-bottom: 12px;
-}
-
-.phase-title {
-  font-family: var(--display);
-  font-size: 32px;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
-
-.phase-duration {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--yellow);
-  letter-spacing: 2px;
-  margin-bottom: 20px;
-}
-
-.phase-desc {
-  font-size: 13px;
-  color: var(--dim);
-  line-height: 1.7;
 }
 
 .fee-table {
@@ -698,6 +675,8 @@ section.full-bleed {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid rgba(255,255,255,0.07);
+  /* Using padding instead of margin so the anchor jumps work better */
+  padding-top: 60px;
 }
 
 /* ─── HOW-TO BLOCKS ─── */
@@ -707,8 +686,7 @@ section.full-bleed {
   flex-direction: column;
   gap: 10px;
 }
-.cyan-block  { background: rgba(0,229,255,0.03);  border: 1px solid rgba(0,229,255,0.12); }
-.yellow-block{ background: rgba(255,230,0,0.03);   border: 1px solid rgba(255,230,0,0.12); }
+
 .howto-block-label {
   font-family: var(--mono);
   font-size: 10px;
@@ -1104,26 +1082,40 @@ a.table-cite:hover { color: var(--cyan); }
 
 /* ─── GAME LOOP FLOW ─── */
 .game-loop {
+  display: grid;
+  grid-template-columns: 4fr min-content 4fr min-content 4fr min-content 4fr;
+  grid-template-rows: min-content 1fr;
+  /*
   display: flex;
   align-items: stretch;
+  */
   margin: 0 0 0;
   overflow-x: auto;
+  padding: 1px 0;
+}
+
+@media (max-width: 768px) {
+  .game-loop {
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content;
+  }
+  .loop-arrow {
+    margin: auto;
+    transform-origin: 50% 50%;
+    transform: rotate(90deg);
+  }
 }
 
 .loop-step {
   flex: 1;
   min-width: 130px;
   padding: 24px 14px;
-  border: 1px solid var(--muted);
   text-align: center;
   position: relative;
 }
-
-.ls-a { border-color: rgba(255,230,0,0.45);  background: rgba(255,230,0,0.04); }
-.ls-b { border-color: rgba(255,230,0,0.22);  background: rgba(255,230,0,0.02); }
-.ls-g { border-color: rgba(0,229,255,0.45); background: rgba(0,229,255,0.04); }
-.ls-r { border-color: rgba(255,45,107,0.45); background: rgba(255,45,107,0.04); }
-
+a.loop-step {
+  text-decoration: none;
+}
 
 .loop-step-num {
   font-family: var(--mono);
@@ -1158,21 +1150,113 @@ a.table-cite:hover { color: var(--cyan); }
 }
 
 .loop-arrow {
-  display: flex;
-  align-items: center;
   padding: 0 6px;
   font-family: var(--mono);
   font-size: 18px;
   color: var(--muted);
   flex-shrink: 0;
   user-select: none;
+  width: min-content;
+  align-self: center;
+}
+
+/*
+.phases {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  background: var(--muted);
+  margin-top: 60px;
+}
+*/
+
+.loop-detail-card {
+  opacity: 0;
+  background: var(--bg2);
+  padding: 36px;
+  grid-column: 1/8;
+  grid-row: 2;
+  transition: opacity 0.2s, transform 0.2s;
+  transform-origin: 50% 0%;
+  transform: scaleX(1) scaleY(0.5);
+
+  --loop-detail-colour: var(--text);
+      border: 1px solid color(from var(--loop-detail-colour) srgb r g b / 0.15);
+    background: color(from var(--loop-detail-colour) srgb r g b / 0.01);
+}
+.loop-detail-card:target {
+  transform: scaleX(1) scaleY(1);
+  opacity: 1;
+}
+@media (max-width: 768px) {
+  .game-loop {
+    display: block;
+  }
+  .loop-detail-card {
+    display: none;
+  }
+  .loop-detail-card:target {
+    display: block;
+  }
+}
+#mechanic_phase_1 {
+  --loop-detail-colour: var(--yellow);
+}
+#mechanic_phase_2 {
+  /*--loop-detail-colour: var(--cyan);*/
+}
+#mechanic_phase_3 {
+  --loop-detail-colour: var(--cyan);
+}
+#mechanic_phase_4 {
+  --loop-detail-colour: var(--red);
+}
+#mechanic_phase_placeholder {
+  --loop-detail-colour: var(--muted);
+}
+#mechanic_phase_1:not(:target) ~ 
+#mechanic_phase_2:not(:target) ~ 
+#mechanic_phase_3:not(:target) ~ 
+#mechanic_phase_4:not(:target) ~ 
+#mechanic_phase_placeholder {
+  transform: scaleX(1) scaleY(1);
+  opacity: 1;
+}
+
+.loop-detail-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--dim);
+  margin-bottom: 12px;
+}
+
+.loop-detail-title {
+  font-family: var(--display);
+  font-size: 32px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.loop-detail-duration {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--yellow);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.loop-detail-desc {
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.7;
 }
 
 .loop-footer {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 0 0 60px;
+  margin: 0 0;
   padding-top: 10px;
   justify-content: flex-end;
 }
@@ -1209,6 +1293,9 @@ a.table-cite:hover { color: var(--cyan); }
   width: 78px;
   flex-shrink: 0;
   text-align: right;
+}
+@media (max-width: 768px) {
+  .fee-bar-label { width: 52px; font-size: 8px; }
 }
 
 .fee-bar-track {
@@ -1262,12 +1349,6 @@ a.table-cite:hover { color: var(--cyan); }
 
 .fee-dot { width: 8px; height: 8px; flex-shrink: 0; }
 
-@media (max-width: 768px) {
-  .game-loop { flex-direction: column; }
-  .loop-arrow { transform: rotate(90deg); align-self: center; }
-  .fee-bar-label { width: 52px; font-size: 8px; }
-}
-
 /* ─── FORMULA ─── */
 .formula {
   font-family: var(--mono);
@@ -1282,6 +1363,196 @@ a.table-cite:hover { color: var(--cyan); }
   border-left: 2px solid rgba(0,229,255,0.3);
   background: rgba(0,229,255,0.03);
 }
+
+.formula-legend {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 6px;
+  line-height: 1.9;
+  letter-spacing: 0.3px;
+}
+
+/* ─── RESPONSIVE (index-specific) ─── */
+@media (max-width: 768px) {
+  .logo-wrap { display: none; }
+  section, section.full-bleed { padding: 60px 20px; }
+  .mechanic-list { grid-template-columns: 1fr; }
+  .liq-comparison { grid-template-columns: 1fr; }
+  .liq-divider { display: none; }
+  .flip-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .flip-grid { grid-template-columns: 1fr; }
+}
+
+
+/* ─── VIBECOIN SECTION ─── */
+.vibecoin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 768px) {
+  .vibecoin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.vibecoin-card {
+    --vc-card-colour: var(--text);
+    --plot-colour: var(--text);
+    display: block;
+    padding: 28px 24px 24px;
+    color: inherit;
+    border: 1px solid color(from var(--vc-card-colour) srgb r g b / 0.3);
+    background: color(from var(--vc-card-colour) srgb r g b / 0.01);
+    position: relative;
+}
+.vibecoin-card-title {
+  font-family: var(--display);
+  color: var(--vc-card-colour);
+  font-size: 26px;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+.vibecoin-card-desc {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.7;
+}
+.vibecoin-card-desc strong {
+  color: var(--vc-card-colour);
+}
+.vibecoin-card {
+  overflow: hidden;
+}
+.vibecoin-card.c { --vc-card-colour: var(--cyan); }
+.vibecoin-card.r { --vc-card-colour: var(--red); }
+.vibecoin-card.y { --vc-card-colour: var(--yellow); }
+
+.vibecoin-card-plot.c, .vibecoin-card-plot.c + .vibecoin-card-plot-label { --plot-colour: var(--cyan); }
+.vibecoin-card-plot.r, .vibecoin-card-plot.r + .vibecoin-card-plot-label { --plot-colour: var(--red); }
+.vibecoin-card-plot.y, .vibecoin-card-plot.y + .vibecoin-card-plot-label { --plot-colour: var(--yellow); }
+
+svg.vibecoin-card-plot {
+  border: 1px solid color(from var(--plot-colour) srgb r g b / 0.3);
+  max-width: 302px;
+  margin: 0 auto;
+  display: block;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  fill: none;
+  stroke: var(--plot-colour);
+  stroke-width: 2px;
+}
+svg.vibecoin-card-plot > path:first-child {
+  animation: plot-scroll 1s linear infinite;
+}
+svg.vibecoin-card-plot.increasing > path:first-child {
+  animation: plot-scroll-increasing 1s linear infinite;
+}
+.vibecoin-card-plot-label {
+  color: var(--plot-colour);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: center;
+
+  margin-bottom: 8px;
+}
+
+@keyframes plot-scroll {
+  from { transform: translateX(0px); }
+  to   { transform: translateX(-120px); }
+}
+@keyframes plot-scroll-increasing {
+  from { transform: translate(0px, -32px); }
+  to   { transform: translate(-120px, -10px); }
+}
+
+
+/* ─── VIBECOIN BELT ─── */
+.vc-belt-outer {
+  position: relative;
+  overflow: hidden;
+  height: 260px;
+  border-right: 1px color(from var(--vc-card-colour) srgb r g b / 0.3) solid;
+  background: linear-gradient(
+    90deg,
+    color(from var(--vc-card-colour) srgb r g b / 0.0001),
+    color(from var(--vc-card-colour) srgb r g b / 0.05)
+  );
+
+  margin-bottom: 8px;
+}
+
+#vibecoin_belt {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 40px;
+}
+
+.vc-token-card {
+  flex-shrink: 0;
+  width: 156px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 10px;
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  margin-right: 20px;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+.vc-token-card svg { width: 128px; height: 128px; display: block; border-radius: 50%; }
+
+.vc-token-name {
+  font-family: var(--display);
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+}
+
+.vc-token-ticker {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--cyan);
+  letter-spacing: 2px;
+}
+
+/* stamp: positioned over the center of the leftmost card (20px belt-pad + 74px half-card) */
+#vibecoin_stamp {
+  position: absolute;
+  left: 114px;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%) scale(2.5);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.3s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#vibecoin_stamp span {
+  display: block;
+  font-family: var(--display);
+  font-size: 28px;
+  color: var(--red);
+  letter-spacing: 4px;
+  border: 2px solid var(--red);
+  padding: 4px 10px;
+  transform: rotate(-15deg);
+  text-shadow: 0 0 12px rgba(255,45,107,0.6);
+  box-shadow: 0 0 12px rgba(255,45,107,0.3);
+}
+
 
 @keyframes oe-glitch {
   0%, 70%, 100% {
@@ -1356,130 +1627,6 @@ a.table-cite:hover { color: var(--cyan); }
   color: rgba(255,45,107,1);
 }
 
-.formula-legend {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--dim);
-  margin-top: 6px;
-  line-height: 1.9;
-  letter-spacing: 0.3px;
-}
-
-/* ─── HERO BACKGROUND LOGO ─── */
-.hero-bg-logo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(2px);
-}
-
-.hero-bg-logo img,
-.hero-bg-logo > svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-@keyframes bgLogoGlitch {
-  0%, 88%, 100% { transform: translate(0,0);       opacity: 1;    filter: none; }
-  89%            { transform: translate(-4px, 2px); opacity: 0.4;  filter: blur(0.8px); }
-  91%            { transform: translate(3px, -1px); opacity: 0.85; filter: none; }
-  93%            { transform: translate(0,0);        opacity: 1; }
-}
-
-/* ─── RESPONSIVE (index-specific) ─── */
-@media (max-width: 768px) {
-  .logo-wrap { display: none; }
-  section, section.full-bleed { padding: 60px 20px; }
-  .mechanic-list { grid-template-columns: 1fr; }
-  .phases { grid-template-columns: 1fr; }
-  .liq-comparison { grid-template-columns: 1fr; }
-  .liq-divider { display: none; }
-  .flip-grid { grid-template-columns: 1fr 1fr; }
-}
-
-@media (max-width: 480px) {
-  .flip-grid { grid-template-columns: 1fr; }
-}
-
-/* ─── VIBECOIN BELT ─── */
-.vc-belt-outer {
-  position: relative;
-  overflow: hidden;
-  height: 210px;
-  margin-top: 24px;
-}
-
-.vc-belt {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding: 0 20px;
-}
-
-.vc-token-card {
-  flex-shrink: 0;
-  width: 148px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 10px;
-  background: var(--bg2);
-  border: 1px solid rgba(255,255,255,0.06);
-  overflow: hidden;
-  margin-right: 20px;
-  transition: opacity 0.5s ease, filter 0.5s ease;
-}
-
-.vc-token-card svg { width: 96px; height: 96px; display: block; }
-
-.vc-token-name {
-  font-family: var(--display);
-  font-size: 13px;
-  color: #fff;
-  text-align: center;
-  line-height: 1.1;
-  letter-spacing: 0.5px;
-}
-
-.vc-token-ticker {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--cyan);
-  letter-spacing: 2px;
-}
-
-/* stamp: positioned over the center of the leftmost card (20px belt-pad + 74px half-card) */
-.vc-rugged-stamp {
-  position: absolute;
-  left: 94px;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%) scale(1.5);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 10;
-  transition: opacity 0.3s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.vc-rugged-stamp span {
-  display: block;
-  font-family: var(--display);
-  font-size: 28px;
-  color: var(--red);
-  letter-spacing: 4px;
-  border: 2px solid var(--red);
-  padding: 4px 10px;
-  transform: rotate(-15deg);
-  text-shadow: 0 0 12px rgba(255,45,107,0.6);
-  box-shadow: 0 0 12px rgba(255,45,107,0.3);
-}
-
 </style>
 </head>
 <body>
@@ -1524,8 +1671,8 @@ a.table-cite:hover { color: var(--cyan); }
 <nav>
   <div class="nav-logo"><a href="#hero"><span class="fo">Fo</span><span class="mo">Mo</span><span class="nad">nad</span></a></div>
   <div class="nav-links">
+    <a href="#howto">mechanics</a>
     <a href="#vibecoin">vibecoins</a>
-    <a href="#mechanics">mechanics</a>
     <a href="#referrals">referral program</a>
     <a href="#state_of_the_art">state of the art</a>
     <a href="#auteurs">visionaries</a>
@@ -1570,8 +1717,7 @@ a.table-cite:hover { color: var(--cyan); }
     <div class="hero-sub">CRYPTO DEGENERACY: AUTOMATED</div>
 
     <p class="hero-desc">
-      Here <strong>you choose</strong> to get rugged. Every round: a new <strong>Vibecoin</strong>, a bonding curve, a timer, a prize pool.
-      <strong>The rug is the product.</strong>
+      Getting rugged is inevitable. <strong>Why not have fun with it it?</strong>
     </p>
 
     <iframe src="./gamestate.html" class="gamestate-widget"
@@ -1597,20 +1743,20 @@ a.table-cite:hover { color: var(--cyan); }
 <div class="inner">
   <div class="section-header">
     <div class="section-num">// 01</div>
-    <div class="section-title">HOW TO <span class="accent-c">PLAY</span></div>
+    <h2 class="section-title">HOW TO <span class="accent-c">PLAY</span></h2>
     <p style="margin-top:20px; font-size:15px; color:var(--dim);">
-      All the fun of crypto. None of the pretending.
+      FoMonad is a gamified launchpad for algorithmically-priced yield-bearing <strong>Vibecoins</strong> with built-in shillenomics. All the fun of crypto. None of the pretending.
     </p>
   </div>
 
   <!-- 3 Ways to Win -->
-  <div class="win-grid-heading">3 WAYS TO <span class="accent-c">WIN</span></div>
+  <h3 class="howto-heading">3 WAYS TO <span class="accent-c">WIN</span></h3>
   <div class="win-grid">
 
-    <a class="win-card c" href="#vibecoin">
+    <a class="link-card win-card c" href="#vibecoin">
       <div class="win-card-num">// 01</div>
       <div class="win-card-title">HODL VIBECOIN</div>
-      <div class="win-card-body">Every Vibecoin holder gets a cut of every buy and sell.</div>
+      <div class="win-card-body">Every Vibecoin holder gets a <span class="cyan">cut of every buy and sell</span>.</div>
       <div class="win-card-aside">Unlike every other memecoin,<br>which doesn't reward you at all.</div>
       <svg class="win-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
         <polygon points="12,2 22,12 12,22 2,12"/>
@@ -1618,10 +1764,10 @@ a.table-cite:hover { color: var(--cyan); }
       </svg>
     </a>
 
-    <a class="win-card r" href="#mechanics">
+    <a class="link-card win-card r" href="#mechanic_phase_4">
       <div class="win-card-num">// 02</div>
       <div class="win-card-title">PULL THE RUG</div>
-      <div class="win-card-body">Last one to buy the Vibecoin before selling unlocks gets up to 21% of the pump volume.</div>
+      <div class="win-card-body">Last one to buy the Vibecoin before selling unlocks gets <span class="red">up to 21% of the pump volume</span>.</div>
       <div class="win-card-aside">The community chooses who pulls<br>the rug — not the developers.</div>
       <svg class="win-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
         <path d="M5,2 H19 L12,11 L19,22 H5 L12,11 Z"/>
@@ -1630,10 +1776,10 @@ a.table-cite:hover { color: var(--cyan); }
       </svg>
     </a>
 
-    <a class="win-card y" href="#referrals">
+    <a class="link-card win-card y" href="#referrals">
       <div class="win-card-num">// 03</div>
       <div class="win-card-title">SHILL FOMONAD</div>
-      <div class="win-card-body">Register a referral code to get 6% of the pump volume.</div>
+      <div class="win-card-body">Register a referral code to get <span class="yellow">6% of the pump volume</span>.</div>
       <div class="win-card-aside">Yet another way to extract value<br>from your audience.</div>
       <svg class="win-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
         <path d="M3,8 H8 L18,3 V21 L8,16 H3 V8 Z"/>
@@ -1645,70 +1791,143 @@ a.table-cite:hover { color: var(--cyan); }
   </div>
 
   <!-- Game loop flow -->
-  <div class="win-grid-heading">THE <span class="accent-r">IMMUTABLE</span> CYCLE</div>
+  <h3 class="howto-heading">THE <span class="accent-r">IMMUTABLE</span> CYCLE</h3>
+
+  <div class="section-num hide-if-not-mobile">
+    // TAP FOR DETAILS
+  </div>
   <div class="game-loop">
-    <div class="loop-step ls-a">
+    <a href="#mechanic_phase_1" class="link-card loop-step y">
       <div class="loop-step-num">// 01</div>
       <div class="loop-step-title">THE INSIDERS</div>
       <div class="loop-step-sub">2 HOURS</div>
-      <div class="loop-step-stat">early access<br>cheapest price<br>pre-sale</div>
+      <div class="loop-step-stat">private fixed-price pre-sale</div>
+    </a>
+    <div id="mechanic_phase_1" class="loop-detail-card">
+      <div class="loop-detail-label">// PHASE 01</div>
+      <div class="loop-detail-title">THE INSIDERS</div>
+      <div class="loop-detail-duration">EARLY ACCESS FOR foMON HOLDERS · 2 HOURS</div>
+      <div class="loop-detail-desc">
+        <ul>
+          <li>First pre-sale before the vibecoin is generated.</li>
+          <li>Lowest possible price before the rugpull.</li>
+          <li>foMON holders all buy in at the same price. (You can get foMON by participating in <a href="#mechanic_phase_3">the pump</a>)</li>
+          <li>If you contributed more than 0.1% of this pre-sale, you can register a <a href="#referrals">referral code</a>.</li>
+        </ul>
+      </div>
     </div>
     <div class="loop-arrow">→</div>
-    <div class="loop-step ls-b">
+    <a href="#mechanic_phase_2" class="link-card loop-step">
       <div class="loop-step-num">// 02</div>
       <div class="loop-step-title">THE "INSIDERS"</div>
       <div class="loop-step-sub">10 HOURS</div>
-      <div class="loop-step-stat">"early" access<br>price already rising<br>last pre-sale</div>
+      <div class="loop-step-stat">public fixed-price pre-sale</div>
+    </a>
+    <div id="mechanic_phase_2" class="loop-detail-card">
+      <div class="loop-detail-label">// PHASE 02</div>
+      <div class="loop-detail-title">THE "INSIDERS"</div>
+      <div class="loop-detail-duration">OPEN · 10 HOURS</div>
+      <div class="loop-detail-desc">
+        <ul>
+          <li>Final pre-sale before the vibecoin is generated.</li>
+          <li>Second-lowest possible price before the rugpull.</li>
+          <li>Everyone buys in at the same price before the pump.</li>
+          <li>If you contributed more than 0.1% of this pre-sale, you can register a <a href="#referrals">referral code</a>.</li>
+        </ul>
+      </div>
     </div>
     <div class="loop-arrow">→</div>
-    <div class="loop-step ls-g">
+    <a href="#mechanic_phase_3" class="link-card loop-step c">
       <div class="loop-step-num">// 03</div>
       <div class="loop-step-title cyan">THE PUMP</div>
       <div class="loop-step-sub">HYPE TIMER</div>
-      <div class="loop-step-stat">each buy increases price<br>grows the rugpull fund<br>extends the timer</div>
+      <div class="loop-step-stat">each buy increases price</div>
+    </a>
+    <div id="mechanic_phase_3" class="loop-detail-card">
+      <div class="loop-detail-label">// PHASE 03</div>
+      <div class="loop-detail-title cyan">THE PUMP</div>
+      <div class="loop-detail-duration">VIBECOIN GENERATED · HYPE-BASED TIMER</div>
+      <div class="loop-detail-desc">
+        <ul>
+          <li>Selling is locked until the timer reaches zero.</li>
+          <li>Every buy delays the timer, increases the price, and airdrops foMON.</li>
+          <li>A <a href="#fees">cut of every buy</a> goes towards all vibecoin holders and the rug fund.</li>
+          <li>Last one to buy before the timer reaches zero wins 90% of the rug fund.</li>
+        </ul>
+      </div>
     </div>
     <div class="loop-arrow">→</div>
-    <div class="loop-step ls-r">
+    <a href="#mechanic_phase_4" class="link-card loop-step r">
       <div class="loop-step-num">// 04</div>
       <div class="loop-step-title red">THE RUGPULL</div>
       <div class="loop-step-sub">TIMER = 0</div>
-      <div class="loop-step-stat">selling is unlocked<br>last buyer gets<br><span class="yellow">90%</span> of rugpull funds</div>
+      <div class="loop-step-stat">selling is unlocked</div>
+    </a>
+    <div id="mechanic_phase_4" class="loop-detail-card">
+      <div class="loop-detail-label">// PHASE 04</div>
+      <div class="loop-detail-title red">THE RUGPULL</div>
+      <div class="loop-detail-duration">TIMER HITS ZERO · SELLING UNLOCKED</div>
+      <div class="loop-detail-desc">
+        <ul>
+          <li>Selling is now unlocked. This is where you exit.</li>
+          <li>The last buyer a.k.a. the rugpuller gets their prize, 90% of the rug fund. (No liquidity is removed from the Vibecoin)</li>
+          <li>Vibecoin holders get a 10% cut of every subsequent buy and sell.</li>
+          <li>The remaining 10% of the rug fund seeds the next cycle, which foMON holders can now start.</li>
+        </ul>
+      </div>
+    </div>
+    <div id="mechanic_phase_placeholder" class="loop-detail-card">
+      <div class="loop-detail-label">// CLICK ABOVE CARDS FOR DETAILS</div>
     </div>
   </div>
   <div class="loop-footer">
     <div class="loop-footer-line"></div>
-    <div class="loop-footer-label">↺ 10% SEEDS THE NEXT ROUND — THE CYCLE RESTARTS.</div>
+    <div class="loop-footer-label">↺ THE CYCLE REPEATS FOREVER.</div>
   </div>
 
-  <div class="howto-step-header", id="vibecoin">THE <span class="accent-c">VIBECOIN</span></div>
-
-  <div class="mechanic-desc" style="margin-top:16px; margin-bottom:8px;">
-    Every round mints a new Vibecoin. Its name, ticker, and logo are randomly generated on-chain. It is then inevitably forgotten; bloating the Monad data store until the end of time.
-  </div>
-  <div class="vc-belt-outer">
-    <div class="vc-belt" id="vcBelt"></div>
-    <div class="vc-rugged-stamp"><span>RUGGED</span></div>
-  </div>
-
-  <div style="margin-top:60px;">
-    <div class="section-num" style="margin-bottom:16px">// THE BONDING CURVE</div>
-    <div class="mechanic-desc" style="margin-bottom:12px;">
-      Every buy raises the price. Every sell lowers it. The smart-contract is always on the other side. After the timer hits zero, selling unlocks and you exit at whatever the math says.
-      <div class="formula-block">
-        <span class="formula">P = P₀ + K·s</span>
-        <div class="formula-legend">
-          P₀ = starting price<br>
-          K &nbsp;= slope, set by the insider rounds<br>
-          s &nbsp;= current token supply
-        </div>
+  <h3 class="howto-heading" id="vibecoin">THE <span class="accent-c">VIBECOIN</span></h3>
+  <div class="section-num">// HUMANS CANNOT BE TRUSTED TO ACCURATELY PRICE VIBES. TRUST THE MACHINE INSTEAD.</div>
+  <div class="vibecoin-grid">
+    <div class="vibecoin-card c">
+      <div class="vibecoin-card-title">RANDOMLY GENERATED</div>
+      <div class="vc-belt-outer">
+        <div id="vibecoin_belt"></div>
+        <div id="vibecoin_stamp"><span>RUGGED</span></div>
       </div>
+      <div class="vibecoin-card-desc">Every round mints a new Vibecoin. Its name, ticker, and logo are randomly generated on-chain.</div>
     </div>
-  </div>
+    <div class="vibecoin-card y">
+      <div class="vibecoin-card-title">ALGORITHMICALLY PRICED</div>
+      <svg class="vibecoin-card-plot" height="64">
+        <path d="M 0,4 c 30,0 30,56, 60,56 c 30,0 30,-56, 60,-56 c 30,0 30,56, 60,56 c 30,0 30,-56, 60,-56 c 30,0 30,56, 60,56 c 30,0 30,-56, 60,-56 c 30,0 30,56, 60,56 c 30,0 30,-56, 60,-56"></path>
+      </svg>
+      <div class="vibecoin-card-plot-label">TOTAL DEPOSITED</div>
 
-  <div style="margin-top:60px;">
-    <div class="section-num" style="margin-bottom:16px">// THE REWARD</div>
-    <div class="mechanic-desc" style="margin-bottom:12px;">
-      Every Vibecoin has its own 10% fee on every buy and sell. That fee goes to all other Vibecoin holders. You still get something for hodling on post-rug.
+      <svg class="vibecoin-card-plot y" height="64">
+        <path d="M 0,4 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56"></path>
+      </svg>
+      <div class="vibecoin-card-plot-label">TOTAL SUPPLY</div>
+
+      <svg class="vibecoin-card-plot c" height="64">
+        <path d="M 0,4 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56"></path>
+      </svg>
+      <div class="vibecoin-card-plot-label">PRICE</div>
+
+      <div class="vibecoin-card-desc">Vibecoin supply and price automatically scales with TVL, not low-liquidity markets.</div>
+    </div>
+    <div class="vibecoin-card r">
+      <div class="vibecoin-card-title">VOLATILITY-BASED REWARDS</div>
+      <svg class="vibecoin-card-plot c" height="64">
+        <path d="M 0,4 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56 c 30,0 60,56, 60,56 c  0,0 30,-56, 60,-56"></path>
+      </svg>
+      <div class="vibecoin-card-plot-label">PRICE</div>
+
+      <svg class="vibecoin-card-plot increasing r" height="64">
+        <path d="M 0,88 c 30,0 30,-11, 60,-11 c 30,0 30,-11, 60,-11 c 30,0 30,-11, 60,-11 c 30,0 30,-11, 60,-11 c 30,0 30,-11, 60,-11 c 30,0 30,-11, 60,-11 c 30,0 30,-11, 60,-11 c 30,0 30,-11, 60,-11 "></path>
+      </svg>
+      <div class="vibecoin-card-plot-label">TOTAL HODL REWARD</div>
+
+      <div class="vibecoin-card-desc">Every Vibecoin has its own 10% fee on every buy and sell. That fee goes to all other Vibecoin holders as dividends. You still get something for hodling on post-rug.</div>
     </div>
   </div>
 
@@ -1716,46 +1935,9 @@ a.table-cite:hover { color: var(--cyan); }
     <div class="loop-footer-line"></div>
     <div class="loop-footer-label">MORE LIQUID THAN ANYTHING IN YOUR PORTFOLIO.</div>
   </div>
-
-  <div class="howto-step-header" id="mechanics">THE <span class="accent-y">ROUND</span></div>
-  <div class="section-num">// A MORE DETAILED LOOK AT WHAT ACTUALLY HAPPENS</div>
   
-  <div class="phases">
-    <div class="phase-card reveal">
-      <div class="phase-label">// PHASE 01</div>
-      <div class="phase-title">THE INSIDERS</div>
-      <div class="phase-duration">2 HOURS · EARLY ACCESS</div>
-      <div class="phase-desc">
-        Private pre-sale. foMON holders only. Everyone gets a proportional slice of the bottom floor. If you've contributed 10% of the pre-sale, you get 10% of the initial token mint at the same price as everyone else.
-      </div>
-    </div>
-    <div class="phase-card reveal">
-      <div class="phase-label">// PHASE 02</div>
-      <div class="phase-title">THE "INSIDERS"</div>
-      <div class="phase-duration">10 HOURS · OPEN</div>
-      <div class="phase-desc">
-        Public pre-sale. Same curve, same proportional equal-price buy-in rules, higher price. Exactly like a VC token launch, except we say so upfront.
-      </div>
-    </div>
-    <div class="phase-card reveal">
-      <div class="phase-label">// PHASE 03</div>
-      <div class="phase-title cyan">THE PUMP</div>
-      <div class="phase-duration">HYPE TIMER · SELLING LOCKED</div>
-      <div class="phase-desc">
-        The initial price has been set. The timer counts down. Each buy mints the Vibecoin, increases its price, extends the timer, and contributes to the rugpull fund. The more Vibecoins minted, the higher rugpull reward.
-      </div>
-    </div>
-    <div class="phase-card reveal">
-      <div class="phase-label">// PHASE 04</div>
-      <div class="phase-title red">THE RUGPULL</div>
-      <div class="phase-duration">TIMER HITS ZERO · SELLING UNLOCKED</div>
-      <div class="phase-desc">
-        <span class="yellow">Last buyer wins 90%</span> of the <span class="red">rugpull fund</span>. 10% seeds the next round. New Vibecoin. Repeat.
-      </div>
-    </div>
-  </div>
-
-  <div style="margin-top:60px;">
+  <h3 class="howto-heading" id="fees">THE <span class="accent-y">FEE</span> STRUCTURE</h3>
+  <div>
     <div class="section-num">// WHERE YOUR BUY GOES</div>
     <div class="fee-bars">
       <div class="fee-bar-row">
@@ -1820,7 +2002,7 @@ a.table-cite:hover { color: var(--cyan); }
     <div class="loop-footer-label">ON-CHAIN. IMMUTABLE. DISCLOSED.</div>
   </div>
 
- <div class="howto-step-header", id="referrals">THE <span class="accent-r">SHILLENOMICS</span></div>
+ <h3 class="howto-heading" id="referrals">THE <span class="accent-r">SHILLENOMICS</span></h3>
  <div class="section-num">// BECAUSE IT'S NOT AN EXTRACTIVE CRYPTO PROJECT WITHOUT A REFERRAL MECHANISM</div>
  
  <div style="text-align:center; margin: 32px 0 40px;">
@@ -1892,7 +2074,7 @@ a.table-cite:hover { color: var(--cyan); }
     <div class="loop-footer-label">GET PAID TO DELAY THE INEVITABLE RUG.</div>
   </div>
 
-  <div class="howto-step-header" style="text-align: center; font-size: 32px;">YOU'RE NOW <span class="cyan">INFORMED</span>. GO GET <span class="red">RUGGED</span>.</div>
+  <h3 class="howto-heading">YOU'RE NOW <span class="cyan">INFORMED</span>. GO GET <span class="red">RUGGED</span>.</h3>
   <div style="margin-top:60px; text-align:center;">
     <iframe src="./gamestate.html" class="gamestate-widget"
       scrolling="no" frameborder="0"
@@ -1914,9 +2096,9 @@ a.table-cite:hover { color: var(--cyan); }
 <div class="inner">
   <div class="section-header">
     <div class="section-num">// 02</div>
-    <div class="section-title">THE STATE OF THE <span class="accent-r">ART</span></div>
-    <p style="margin-top:20px; font-size:15px; color:var(--dim); max-width:600px;">
-      This is not a game about crypto. This is a game <em>because of</em> crypto.
+    <h2 class="section-title">THE STATE OF THE <span class="accent-r">ART</span></h2>
+    <p style="margin-top:20px; font-size:15px; color:var(--dim);">
+      The crypto industry wants to sell you myths. FoMonad is a game about how crypto is while being honest about it.<br>
       Everything below is real. Tap or hover for the comparison.
     </p>
   </div>
@@ -1963,9 +2145,9 @@ a.table-cite:hover { color: var(--cyan); }
           <div class="flip-back">
             <div class="flip-back-label">// VIBECOINS</div>
             <div class="flip-back-number">100<span style="font-size:28px">%</span></div>
-            <div class="flip-back-desc">float from block one. No vesting. No scheduled unlocks. No surprise sell events. Every Vibecoin is priced by a bonding curve — math, not marketing.</div>
+            <div class="flip-back-desc">float from block one. No vesting. No scheduled unlocks. No surprise sell events. Every Vibecoin is priced by a TVL-based algorithm. Math, not marketing.</div>
             <div class="flip-back-foot">
-              <div class="flip-back-cta">// BONDING CURVE IS ALWAYS OPEN</div>
+              <div class="flip-back-cta">// PRICE CURVE IS ALWAYS OPEN</div>
             </div>
           </div>
         </div>
@@ -2146,26 +2328,26 @@ a.table-cite:hover { color: var(--cyan); }
         <tbody>
           <tr>
             <td class="project-name">Worldcoin (WLD)<a href="https://defillama.com/chain/World%20Chain" class="table-cite" target="_blank" rel="noopener">↗</a></td>
-            <td class="bad">1.4%</td>
-            <td class="bad">~$0.02<a href="https://blog.polkastarter.com/polkastarter-is-bringing-back-low-fdv-token-sales-and-fair-community-launches/" class="table-cite" target="_blank" rel="noopener">↗</a></td>
+            <td class="bad">33%</td>
+            <td class="bad">≤$0.30<a href="https://dropstab.com/coins/worldcoin/fundraising" class="table-cite" target="_blank" rel="noopener">↗</a></td>
             <td class="meh">$2.00+</td>
             <td class="bad">↓ 85%</td>
             <td class="bad">YOU</td>
           </tr>
           <tr>
             <td class="project-name">Starknet (STRK)<a href="https://defillama.com/chain/starknet" class="table-cite" target="_blank" rel="noopener">↗</a></td>
-            <td class="bad">7%</td>
-            <td class="bad">~$0.01<a href="https://blog.polkastarter.com/polkastarter-is-bringing-back-low-fdv-token-sales-and-fair-community-launches/" class="table-cite" target="_blank" rel="noopener">↗</a></td>
+            <td class="meh">59%</td>
+            <td class="bad">~$0.01<a href="https://dropstab.com/coins/starknet/fundraising" class="table-cite" target="_blank" rel="noopener">↗</a></td>
             <td class="meh">$1.80</td>
             <td class="bad">↓ never above launch</td>
             <td class="bad">YOU</td>
           </tr>
           <tr>
-            <td class="project-name">Monad (MON)<a href="https://defillama.com/chain/monad" class="table-cite" target="_blank" rel="noopener">↗</a></td>
-            <td class="bad">10.8%</td>
-            <td class="bad">$0.0115<a href="https://audit.tokenomics.com/tokenomics/monad" class="table-cite" target="_blank" rel="noopener">↗</a></td>
-            <td class="meh">$0.025</td>
-            <td class="meh">↓ TBD</td>
+            <td class="project-name">MegaETH (MEGA)<a href="https://dropstab.com/coins/megaeth" class="table-cite" target="_blank" rel="noopener">↗</a></td>
+            <td class="bad">11.4%</td>
+            <td class="bad">~$0.02<a href="https://audit.tokenomics.com/tokenomics/monad" class="table-cite" target="_blank" rel="noopener">↗</a></td>
+            <td class="meh">~$0.12</td>
+            <td class="bad">↓ 42% of ATH</td>
             <td class="bad">YOU (again)</td>
           </tr>
           <tr>
@@ -2201,7 +2383,7 @@ a.table-cite:hover { color: var(--cyan); }
 <section id="auteurs">
   <div class="section-header">
     <div class="section-num">// 03</div>
-    <div class="section-title">THE <span class="accent-r">"VISIONARIES"</span></div>
+    <h2 class="section-title">THE <span class="accent-r">"VISIONARIES"</span></h2>
     <p style="margin-top:20px; font-size:15px; color:var(--dim);">
       Featured perpetuators of the fraudulent economy. Each one sold a plan to help save the world, they delivered mythology.
     </p>
@@ -2396,6 +2578,10 @@ a.table-cite:hover { color: var(--cyan); }
     <button class="auteur-dot"></button>
     <button class="auteur-dot"></button>
   </div>
+
+  <p style="margin-top:20px; font-size:15px; color:var(--dim);">
+    The economy these people help glorify only see "trust", "faith", and "belief" as metrics to be gamed for maximum extraction.
+  </p>
 </section>
 
 
@@ -2474,13 +2660,38 @@ a.table-cite:hover { color: var(--cyan); }
 </div>
 
 <script>
-// ── Inline hero background SVG (progressive enhancement over <img> fallback) ──
-fetch('fomonad-animated-optimized.svg')
-  .then(r => r.text())
-  .then(svg => {
-    const container = document.querySelector('.hero-bg-logo');
-    if (container) container.innerHTML = svg;
-  });
+
+document.addEventListener("click", (e) => {
+  const anchor = e.target.closest("a[href^=\"#\"]");
+  if (!anchor) return;
+  const id = anchor.getAttribute("href").slice(1);
+  const target = document.getElementById(id);
+  if (!target || !isInViewport(target)) return;
+  // Amazing hack to make the browser not scroll if the the target isn't already visible.
+  // Needed for the "Immutable cycle" cards
+  const x = window.scrollX;
+  const y = window.scrollY;
+  window.scrollTo({ top: y, left: x, behavior: 'instant' });
+  function stopTheScroll(i = 3) {
+    if (i <= 0) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: y, left: x, behavior: 'instant' });
+      stopTheScroll(i - 1);
+    });
+  }
+  stopTheScroll();
+});
+
+function isInViewport(el) {
+  const rect = el.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.bottom <= (window.innerHeight - (window.innerHeight / 7))
+  );
+}
+
 
 // ── TICKER with citation links ──────────────────────────────────────
 const tickerItems = [
@@ -2516,16 +2727,6 @@ allItems.forEach(item => {
   div.innerHTML = html;
   inner.appendChild(div);
 });
-
-
-// ── SCROLL REVEAL ────────────────────────────────────────────────────
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) e.target.classList.add('visible');
-  });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 // ── VIBECOIN GENERATOR ──────────────────────────────────────────────
 (function() {
@@ -2734,8 +2935,8 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </svg>`;
   }
 
-  const belt  = document.getElementById('vcBelt');
-  const stamp = document.querySelector('.vc-rugged-stamp');
+  const belt  = document.getElementById('vibecoin_belt');
+  const stamp = document.getElementById('vibecoin_stamp');
   if (!belt || !stamp) return;
 
   const CARD_W   = 148;
@@ -2769,7 +2970,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
     // ── Phase 1: stamp slams in, card dissolves (simultaneous) ──
     stamp.style.opacity = '1';
-    stamp.style.transform = 'translateX(-50%) translateY(-50%) scale(1)';
+    stamp.style.transform = 'translateX(-50%) translateY(-50%) scale(1.5)';
     card.style.opacity = '0';
     card.style.filter  = 'blur(22px)';
 
@@ -2781,7 +2982,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       // ── Phase 3: while stamp is invisible, teleport scale back ──
       setTimeout(() => {
         stamp.style.transition = 'none';
-        stamp.style.transform  = 'translateX(-50%) translateY(-50%) scale(1.5)';
+        stamp.style.transform  = 'translateX(-50%) translateY(-50%) scale(2.5)';
         void stamp.offsetHeight; // flush
         stamp.style.transition = 'opacity 0.28s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
 
