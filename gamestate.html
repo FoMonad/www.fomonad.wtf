@@ -91,7 +91,9 @@ body {
   margin-bottom: 4px;
   transition: color .4s;
 }
-.countdown.urgent { color: var(--red); }
+.countdown.urgent {
+  animation: colour-blink 1s ease infinite;
+}
 
 /* ── Vibecoin row ── */
 .vibecoin-row {
@@ -163,6 +165,9 @@ body {
   letter-spacing: 1px;
   color: var(--cyan);
 }
+.stat-value.prize, .urgent {
+  animation: colour-blink 1s ease infinite;
+}
 .stat-value.yellow { color: var(--yellow); }
 .stat-value.red    { color: var(--red); }
 .stat-value.addr {
@@ -196,6 +201,12 @@ body {
   0%,100% { opacity: 1; }
   50%      { opacity: .2; }
 }
+@keyframes colour-blink {
+  0% { color: var(--cyan); }
+  50% { color: var(--cyan); }
+  75%      { color: var(--red); }
+  100% { color: var(--cyan); }
+}
 </style>
 </head>
 <body>
@@ -208,7 +219,7 @@ body {
   <div class="footer">
     <span><span class="pulse" id="pulse"></span><span id="footerStatus">—</span></span>
     <a href="./rugpad_testnet/" target="_top"
-       style="color:var(--cyan);letter-spacing:2px;font-size:9px;">
+       style="color:var(--cyan); letter-spacing:2px; font-size:9px; padding: 4px 8px ">
       OPEN APP (TESTNET) →
     </a>
   </div>
@@ -217,9 +228,9 @@ body {
 <script>
 'use strict';
 const RPC    = 'https://testnet-rpc.monad.xyz';
-const RUGPAD = '0x24654BBcE7984E968a293671A404d79a7aDf2D57';
+const RUGPAD = '0x681ddD0CF31575777f82c98653Cf11A35c519f6d';
 const SHMON  = '0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9';
-const FOMON  = '0x0f3Ed63A647A71bd57657c105A4d171A535E9A68';
+const FOMON  = '0x045882232FEC3c23CF84a9E589471b7Da92A3C96';
 const SEL_GAMESTATE    = '0x2e2d1e56'; // gameState(bool)
 const SEL_PREVIEW      = '0x91767552'; // previewUnstake(uint256)
 const SEL_AIRDROP_MINTED = '0x56eb4654'; // totalAirdropMinted()
@@ -485,7 +496,7 @@ function renderWidget() {
 
   } else if (phase === 1) {
     // SERIES_B
-    html += `<div class="status-msg">PRE-SALE ENDS IN</div>`;
+    html += `<div class="status-msg">${st.cycle <= 1 ? "EXTENDED inaugural" : ""}PRE-SALE ENDS IN</div>`;
     html += `<div class="countdown${secs < 300 ? ' urgent' : ''}" id="cd">${fmtCountdown(secs)}</div>`;
     html += divider();
     html += statsHtml(st);
@@ -549,15 +560,15 @@ function fmtFoMON(wei) {
 
 function statsHtml(st, showLastBuyer = false, isSettled = false, airdrop = null) {
   const prizeWei   = st.prizePool * 9n / 10n;
-  const prizeLabel = isSettled ? 'WINNER\'S PRIZE' : 'RUGPULL REWARD';
+  const prizeLabel = isSettled ? 'LAST BUYER RUGGED' : 'LAST BUYER RUGGING';
 
   let html = `
     <div class="stat-row">
       <span class="stat-label">${prizeLabel}</span>
-      <span class="stat-value">${shmonToMON(prizeWei)}</span>
+      <span class="stat-value prize">${shmonToMON(prizeWei)}</span>
     </div>`;
   if (showLastBuyer && st.lastBuyer !== ZERO_ADDR) {
-    const label = isSettled ? 'WINNER' : 'RUGPULLER <wbr>(THIS CAN BE YOU)';
+    const label = isSettled ? 'RUGPULLER' : 'RUGPULLER <wbr>(THIS CAN BE YOU)';
     html += `<div class="stat-row">
       <span class="stat-label">${label}</span>
       <span class="stat-value addr">${escHtml(fmtAddr(st.lastBuyer))}</span>
