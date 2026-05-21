@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoMonad — A Fully Transparent Extraction Mechanism</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #060608;
+    --bg2: #0a0a0e;
+    --bg3: #0f0f14;
+    --text: #c8c8d8;
+    --text-dim: #9898a8;
+    --text-bright: #e8e8f0;
+    --green: #00e5ff;
+    --red: #ff2d6b;
+    --amber: #ffe600;
+    --cyan: #ffe600;
+    --border: #18181e;
+    --border-bright: #242430;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
+    --body: 'Libre Baskerville', Georgia, serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Layout */
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ==================== COVER ==================== */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 32px;
+    position: relative;
+    border-bottom: 1px solid var(--border-bright);
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+  }
+
+  .cover-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .cover-meta span { color: var(--text-dim); }
+
+  h1.cover-title {
+    font-family: var(--serif);
+    font-size: clamp(52px, 8vw, 96px);
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+  }
+
+  h1.cover-title em {
+    font-style: italic;
+    color: var(--green);
+  }
+
+  .cover-subtitle {
+    font-family: var(--serif);
+    font-size: clamp(18px, 3vw, 26px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text-dim);
+    margin-bottom: 64px;
+    padding-left: 4px;
+  }
+
+  .cover-abstract {
+    max-width: 600px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+    border-left: 2px solid var(--border-bright);
+    padding-left: 24px;
+    margin-bottom: 64px;
+  }
+
+  .cover-abstract strong { color: var(--amber); font-weight: 700; }
+
+  .cover-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid var(--border-bright);
+    color: var(--text-dim);
+  }
+
+  .tag.green { border-color: var(--green); color: var(--green); }
+  .tag.red { border-color: var(--red); color: var(--red); }
+  .tag.amber { border-color: var(--amber); color: var(--amber); }
+
+  /* ==================== TOC ==================== */
+  .toc-section {
+    padding: 80px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2px;
+    margin-top: 32px;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg2);
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.15s, color 0.15s;
+    font-size: 14px;
+  }
+
+  .toc-item:hover { background: var(--bg3); color: var(--text-bright); }
+
+  .toc-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--green);
+    min-width: 20px;
+  }
+
+  /* ==================== SECTIONS ==================== */
+  .section {
+    padding: 80px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--text-bright);
+    margin-bottom: 32px;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin: 40px 0 16px;
+    letter-spacing: -0.005em;
+  }
+
+  h4 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 32px 0 12px;
+  }
+
+  p { margin-bottom: 20px; }
+
+  p:last-child { margin-bottom: 0; }
+
+  strong { color: var(--text-bright); font-weight: 700; }
+
+  em { font-style: italic; color: var(--text-bright); }
+
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ==================== CALLOUTS ==================== */
+  .callout {
+    background: var(--bg2);
+    border-left: 3px solid var(--amber);
+    padding: 20px 24px;
+    margin: 32px 0;
+    font-size: 14px;
+  }
+
+  .callout.green { border-color: var(--green); }
+  .callout.red { border-color: var(--red); }
+  .callout.cyan { border-color: var(--cyan); }
+
+  .callout-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+
+  .callout.green .callout-title { color: var(--green); }
+  .callout.red .callout-title { color: var(--red); }
+  .callout.cyan .callout-title { color: var(--cyan); }
+
+  /* ==================== CODE ==================== */
+  code {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--bg2);
+    padding: 2px 6px;
+    color: var(--cyan);
+  }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 24px 0;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  pre .k { color: var(--green); }
+  pre .v { color: var(--cyan); }
+  pre .c { color: var(--text-dim); font-style: italic; }
+  pre .n { color: var(--amber); }
+
+  /* ==================== PHASE DIAGRAM ==================== */
+  .phase-flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin: 40px 0;
+  }
+
+  @media (max-width: 600px) {
+    .phase-flow { grid-template-columns: 1fr 1fr; }
+  }
+
+  .phase-card {
+    background: var(--bg2);
+    padding: 20px 16px;
+    text-align: center;
+    position: relative;
+  }
+
+  .phase-num {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .phase-name {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .phase-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+
+  .phase-duration {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--amber);
+  }
+
+  .phase-card::after {
+    content: '→';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--border-bright);
+    font-size: 16px;
+    z-index: 1;
+  }
+
+  .phase-card:last-child::after { display: none; }
+
+  .phase-card.series-a { border-top: 2px solid var(--cyan); }
+  .phase-card.series-b { border-top: 2px solid #a89800; }
+  .phase-card.pump { border-top: 2px solid var(--green); }
+  .phase-card.rugpull { border-top: 2px solid var(--red); }
+
+  /* ==================== CHARTS ==================== */
+  .chart-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin: 32px 0;
+    position: relative;
+  }
+
+  .chart-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  .chart-title span { color: var(--text-bright); }
+
+  canvas { max-width: 100%; }
+
+  .charts-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin: 32px 0;
+  }
+
+  @media (max-width: 700px) {
+    .charts-3col { grid-template-columns: 1fr; }
+  }
+
+  .chart-wrap-sm {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 20px 16px;
+    text-align: center;
+  }
+
+  .chart-wrap-sm .chart-title { text-align: left; }
+
+  /* ==================== MATH BOX ==================== */
+  .math-box {
+    background: var(--bg2);
+    border: 1px solid var(--border-bright);
+    padding: 24px 28px;
+    margin: 24px 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 2.0;
+  }
+
+  .math-eq {
+    color: var(--text-bright);
+    padding: 4px 0;
+  }
+
+  .math-eq .sym { color: var(--green); }
+  .math-eq .val { color: var(--cyan); }
+  .math-eq .note { color: var(--text-dim); font-size: 11px; }
+
+  /* ==================== TABLE ==================== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-bright);
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td.num { font-family: var(--mono); font-size: 13px; color: var(--cyan); }
+  td.highlight { color: var(--text-bright); font-weight: 700; }
+  td.green { color: var(--green); font-family: var(--mono); font-size: 13px; }
+  td.amber { color: var(--amber); font-family: var(--mono); font-size: 13px; }
+  td.red { color: var(--red); font-family: var(--mono); font-size: 13px; }
+  td.purple { color: #9898ff; font-family: var(--mono); font-size: 13px; }
+  td.referral { color: #606080; font-family: var(--mono); font-size: 13px; }
+  td.vc { color: #00a8c0; font-family: var(--mono); font-size: 13px; }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ==================== TOKEN FLOW DIAGRAM ==================== */
+  .flow-diagram {
+    margin: 32px 0;
+  }
+
+  /* ==================== STAT GRID ==================== */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 2px;
+    margin: 32px 0;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    padding: 20px 18px;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+  .stat-value.amber { color: var(--amber); }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* ==================== HORIZONTAL RULE ==================== */
+  hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+    margin: 40px 0;
+  }
+
+  /* ==================== FOOTER ==================== */
+  .footer {
+    padding: 48px 32px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+
+  @media (max-width: 600px) {
+    .footer-inner { grid-template-columns: 1fr; }
+  }
+
+  .footer-col h5 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+
+  .footer-col p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ==================== SCROLL INDICATOR ==================== */
+  .page-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-top: 80px;
+  }
+
+  /* ==================== DISCLAIMER BOX ==================== */
+  .disclaimer {
+    background: rgba(255, 45, 107, 0.05);
+    border: 1px solid rgba(255, 45, 107, 0.2);
+    padding: 24px 28px;
+    margin: 32px 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  .disclaimer strong { color: var(--red); }
+
+  /* Animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section { animation: fadeIn 0.5s ease both; }
+
+  /* Selection */
+  ::selection { background: rgba(0, 232, 122, 0.2); color: var(--text-bright); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ COVER -->
+<section class="cover page">
+  <div class="cover-meta">
+    Technical Whitepaper <span>·</span> Version 1.0 <span>·</span> Monad Network <span>·</span> fomonad.wtf
+  </div>
+
+  <h1 class="cover-title"><em>FoMonad</em></h1>
+  <div class="cover-subtitle">A Fully Transparent Extraction Mechanism</div>
+
+  <div class="cover-abstract">
+    <p>FoMonad is an on-chain game built on Monad combining a token dividend accumulator with a last-buyer countdown timer — now executable without prohibitive gas costs. It deploys a fresh <strong>Vibecoin</strong> bonding curve each cycle, runs a structured presale across two privileged access tiers, then opens a pump phase governed by a countdown timer. When the timer expires, the last buyer wins <strong>90% of the prize pool.</strong></p>
+    <p>This document describes the system honestly. That, in crypto, constitutes satire.</p>
+  </div>
+
+  <div class="cover-tags">
+    <span class="tag green">Monad Mainnet</span>
+    <span class="tag green">Chain ID: 143</span>
+    <span class="tag red">Immutable Contracts</span>
+    <span class="tag amber">shMON Denominated</span>
+    <span class="tag">WTFPL License</span>
+    <span class="tag">No Admin Keys</span>
+    <span class="tag">No Upgrade Path</span>
+  </div>
+
+  <div class="page-num">§ 0 · Cover</div>
+</section>
+
+<!-- ============================================================ TOC -->
+<section class="toc-section page">
+  <div class="section-label">Navigation</div>
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a class="toc-item" href="#architecture"><span class="toc-num">01</span>Protocol Architecture</a>
+    <a class="toc-item" href="#phases"><span class="toc-num">02</span>Game Phases</a>
+    <a class="toc-item" href="#fees"><span class="toc-num">03</span>Fee Economics</a>
+    <a class="toc-item" href="#timer"><span class="toc-num">04</span>Timer Mechanics</a>
+    <a class="toc-item" href="#fomon"><span class="toc-num">05</span>foMON: Protocol Token</a>
+    <a class="toc-item" href="#vibecoin"><span class="toc-num">06</span>Vibecoin &amp; Bonding Curve</a>
+    <a class="toc-item" href="#shmon"><span class="toc-num">07</span>shMON Integration</a>
+    <a class="toc-item" href="#security"><span class="toc-num">08</span>Security & Immutability</a>
+    <a class="toc-item" href="#referrals"><span class="toc-num">09</span>Referral System</a>
+    <a class="toc-item" href="#contracts"><span class="toc-num">10</span>Contract Reference</a>
+  </div>
+</section>
+
+<!-- ============================================================ § 01 ARCHITECTURE -->
+<section class="section page" id="architecture">
+  <div class="section-label">§ 01</div>
+  <h2>Protocol Architecture</h2>
+
+  <p>FoMonad is a three-contract system. Each contract has a narrow, well-defined responsibility. There are no proxy patterns, no upgrade paths, and no administrative functions of any kind. The contracts are deployed once and operate autonomously until the heat death of the Monad network.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">FoMonad.sol</div>
+      <div class="stat-value">foMON</div>
+      <div class="stat-sub">Protocol token, dividend distribution</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">FoMonadGame.sol</div>
+      <div class="stat-value">Game</div>
+      <div class="stat-sub">Phase logic, prize pool, settlements</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Vibecoin.sol</div>
+      <div class="stat-value">Vibecoin</div>
+      <div class="stat-sub">Per-cycle bonding curve token</div>
+    </div>
+  </div>
+
+  <p>A new <strong>Vibecoin</strong> is deployed as a minimal proxy clone at the start of every game cycle. This means each cycle produces a fresh token with a fresh bonding curve, a procedurally-generated name and on-chain artwork derived from a block hash seed, and completely isolated state. The Vibecoin from the previous cycle continues to exist; its sell function remains permanently open.</p>
+
+  <div class="callout cyan">
+    <div class="callout-title">Design Note — shMON Everywhere</div>
+    All internal accounting is denominated in <strong>shMON</strong> (FastLane's liquid staking token). Native MON sent to any function is immediately wrapped to shMON via <code>SHMON.deposit()</code>. This means the protocol earns staking yield passively on all held balances. When you look at a number labeled "shMON," it is worth approximately 1 MON, increasing over time.
+  </div>
+
+  <!-- Contract interaction SVG -->
+  <h3>Execution Flow</h3>
+  <p>Which contracts call which. Arrows represent function calls, not capital movement. For where the shMON actually goes, see the Capital Flow diagram in §03.</p>
+
+  <svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:820px;background:var(--bg2);display:block;margin:0 auto;">
+    <defs>
+      <marker id="e-arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#242430"/></marker>
+      <marker id="e-arr-green" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#00e5ff"/></marker>
+      <marker id="e-arr-cyan" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#ffe600"/></marker>
+      <marker id="e-arr-amber" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#ffe600"/></marker>
+      <marker id="e-arr-dim" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#404050"/></marker>
+    </defs>
+
+    <!-- User -->
+    <rect x="20" y="155" width="110" height="60" fill="#0a0a0e" stroke="#242430" stroke-width="1"/>
+    <text x="75" y="181" text-anchor="middle" fill="#c8c8d8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">User</text>
+    <text x="75" y="197" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="9">EOA / Wallet</text>
+
+    <!-- FoMonadGame -->
+    <rect x="210" y="120" width="160" height="120" fill="#0a0a0e" stroke="#00e5ff" stroke-width="1.5"/>
+    <text x="290" y="145" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">FoMonadGame</text>
+    <text x="290" y="163" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">buy() · depositSeriesA/B()</text>
+    <text x="290" y="177" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">settleSeriesB()</text>
+    <text x="290" y="191" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">triggerSettlement()</text>
+    <text x="290" y="205" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">claimSeries[A/B]Tokens()</text>
+    <text x="290" y="219" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">registerReferral()</text>
+
+    <!-- FoMonad -->
+    <rect x="480" y="30" width="150" height="80" fill="#0a0a0e" stroke="#ffe600" stroke-width="1"/>
+    <text x="555" y="57" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">FoMonad</text>
+    <text x="555" y="73" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">distributeProtocolFee()</text>
+    <text x="555" y="87" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">mintAirdrop() · optIn()</text>
+    <text x="555" y="101" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">claim()</text>
+
+    <!-- Vibecoin -->
+    <rect x="480" y="200" width="150" height="80" fill="#0a0a0e" stroke="#ffe600" stroke-width="1"/>
+    <text x="555" y="227" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">Vibecoin</text>
+    <text x="555" y="243" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">buyWithShMon() · buy()</text>
+    <text x="555" y="257" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">sell() · unlock() · drip()</text>
+    <text x="555" y="271" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">claimDividends() · optIn()</text>
+
+    <!-- shMON -->
+    <rect x="680" y="140" width="120" height="70" fill="#0a0a0e" stroke="#404050" stroke-width="1"/>
+    <text x="740" y="167" text-anchor="middle" fill="#c8c8d8" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">shMON</text>
+    <text x="740" y="183" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">deposit() · balanceOf()</text>
+    <text x="740" y="197" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">safeTransfer()</text>
+
+    <!-- User → FoMonadGame -->
+    <line x1="130" y1="182" x2="208" y2="182" stroke="#00e5ff" stroke-width="1.5" marker-end="url(#e-arr-green)"/>
+    <text x="169" y="175" text-anchor="middle" fill="#00e5ff" font-family="JetBrains Mono, monospace" font-size="8">calls</text>
+
+    <!-- FoMonadGame → FoMonad -->
+    <path d="M370,148 L478,90" fill="none" stroke="#ffe600" stroke-width="1" marker-end="url(#e-arr-cyan)"/>
+    <text x="418" y="108" text-anchor="middle" fill="#ffe600" font-family="JetBrains Mono, monospace" font-size="8">distributeProtocolFee()</text>
+    <text x="418" y="120" text-anchor="middle" fill="#ffe600" font-family="JetBrains Mono, monospace" font-size="8">mintAirdrop()</text>
+
+    <!-- FoMonadGame → Vibecoin -->
+    <path d="M370,222 L478,248" fill="none" stroke="#ffe600" stroke-width="1" marker-end="url(#e-arr-amber)"/>
+    <text x="418" y="244" text-anchor="middle" fill="#ffe600" font-family="JetBrains Mono, monospace" font-size="8">buyWithShMon()</text>
+    <text x="418" y="256" text-anchor="middle" fill="#ffe600" font-family="JetBrains Mono, monospace" font-size="8">unlock()</text>
+
+    <!-- FoMonadGame → shMON -->
+    <path d="M370,175 L678,172" fill="none" stroke="#404050" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#e-arr-dim)"/>
+    <text x="524" y="167" text-anchor="middle" fill="#404050" font-family="JetBrains Mono, monospace" font-size="8">deposit() · safeTransfer()</text>
+
+    <!-- FoMonad → shMON -->
+    <path d="M630,90 Q660,90 680,148" fill="none" stroke="#404050" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#e-arr-dim)"/>
+    <text x="672" y="115" text-anchor="middle" fill="#404050" font-family="JetBrains Mono, monospace" font-size="8">safeTransfer()</text>
+    <text x="672" y="127" text-anchor="middle" fill="#404050" font-family="JetBrains Mono, monospace" font-size="8">(dividends)</text>
+
+    <!-- Vibecoin → shMON -->
+    <path d="M630,248 Q660,248 680,210" fill="none" stroke="#404050" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#e-arr-dim)"/>
+    <text x="672" y="244" text-anchor="middle" fill="#404050" font-family="JetBrains Mono, monospace" font-size="8">deposit()</text>
+    <text x="672" y="256" text-anchor="middle" fill="#404050" font-family="JetBrains Mono, monospace" font-size="8">safeTransfer()</text>
+
+    <!-- Legend -->
+    <line x1="20" y1="340" x2="50" y2="340" stroke="#00e5ff" stroke-width="1.5" marker-end="url(#e-arr-green)"/>
+    <text x="56" y="344" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="9">user-initiated call</text>
+    <line x1="200" y1="340" x2="230" y2="340" stroke="#ffe600" stroke-width="1" marker-end="url(#e-arr-cyan)"/>
+    <text x="236" y="344" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="9">game → foMON call</text>
+    <line x1="390" y1="340" x2="420" y2="340" stroke="#ffe600" stroke-width="1" marker-end="url(#e-arr-amber)"/>
+    <text x="426" y="344" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="9">game → vibecoin call</text>
+    <line x1="580" y1="340" x2="610" y2="340" stroke="#404050" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#e-arr-dim)"/>
+    <text x="616" y="344" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="9">shMON calls</text>
+  </svg>
+
+  <div class="page-num">§ 01 · Protocol Architecture</div>
+</section>
+
+<!-- ============================================================ § 02 PHASES -->
+<section class="section page" id="phases">
+  <div class="section-label">§ 02</div>
+  <h2>Game Phases</h2>
+
+  <p>Each game cycle progresses through four phases. Phase transitions are <em>lazy</em>: the contract state updates on-demand rather than via scheduled calls, which eliminates the need for keepers and reduces gas overhead.</p>
+
+  <div class="phase-flow">
+    <div class="phase-card series-a">
+      <div class="phase-num">Phase 01</div>
+      <div class="phase-name">The Insiders</div>
+      <div class="phase-sub">Series A · foMON holders only</div>
+      <div class="phase-duration">Inaugural: 48h<br>Subsequent: 2h</div>
+    </div>
+    <div class="phase-card series-b">
+      <div class="phase-num">Phase 02</div>
+      <div class="phase-name">The 'Insiders'</div>
+      <div class="phase-sub">Series B · Public presale</div>
+      <div class="phase-duration">Inaugural: 72h<br>Subsequent: 10h</div>
+    </div>
+    <div class="phase-card pump">
+      <div class="phase-num">Phase 03</div>
+      <div class="phase-name">The Pump</div>
+      <div class="phase-sub">Public open market + timer</div>
+      <div class="phase-duration">Base: 24h<br>Max: 26 wks</div>
+    </div>
+    <div class="phase-card rugpull">
+      <div class="phase-num">Phase 04</div>
+      <div class="phase-name">The Rugpull</div>
+      <div class="phase-sub">Settlement · Timer expires</div>
+      <div class="phase-duration">Winner: 90%<br>Rollover: 10%</div>
+    </div>
+  </div>
+
+  <h3>Phase Logic in Detail</h3>
+
+  <h4>Series A — The Insiders (foMON Required)</h4>
+  <p>Series A admits only addresses holding a non-zero foMON balance. This is not an exclusive club so much as a <em>denominator-reducing mechanism</em>: by requiring skin-in-the-game participation, it concentrates Series A deposits among the people most likely to understand what they are participating in. The phase does not begin counting down until <strong>7,500 shMON</strong> (MIN_BUY × 500) of gross deposits has been reached, preventing empty-cycle initialization and guaranteeing the opening prize pool is at least 100× MIN_BUY.</p>
+
+  <h4>Series B — The 'Insiders' (Open)</h4>
+  <p>Series B begins automatically once Series A concludes. It is open to any address with no foMON requirement. Series B participants receive a higher fraction of their deposit directed to the bonding curve (80% vs. 70%), which is designed to partially compensate for the fact that they are buying at a higher curve entry price — Series A having already moved the price up.</p>
+
+  <h4>Settlement — Series → Vibecoin</h4>
+  <p>After Series B concludes, anyone may call <code>FoMonadGame.settleSeriesB()</code>. This function:</p>
+  <ol style="margin: 0 0 20px 24px; line-height: 2;">
+    <li>Derives the bonding curve constant <strong>K</strong> from total series deposits</li>
+    <li>Deploys a new Vibecoin clone with a procedurally-generated identity</li>
+    <li>Executes Series A's collective buy at price P₀ (supply starting at zero)</li>
+    <li>Executes Series B's collective buy at the higher post-Series-A price</li>
+    <li>Sets the initial one-hour timer and opens the pump phase</li>
+  </ol>
+
+  <div class="callout">
+    <div class="callout-title">Key Property</div>
+    Series A and B deposits are pooled before being sent to the bonding curve as collective buys. Individual claimants receive their proportional share of the tokens minted in each collective buy. Series A receives a better average price because it executes first. Within each series, all depositors receive the same average price regardless of when they deposited — the first wallet to enter Series A and the last wallet to enter Series A pay identically. Front-running the series open is not rewarded.
+  </div>
+
+  <h4>Pump Phase</h4>
+  <p>During the pump phase, anyone may call <code>FoMonadGame.buy()</code>. Each purchase routes a fraction to the prize pool, a fraction to the Vibecoin curve, and extends the timer. The timer extension is a <strong>diminishing-returns function of pump volume</strong> relative to series size — described in detail in §04. The last buyer when the timer expires wins the prize pool.</p>
+
+  <h4>Settlement (The Rugpull)</h4>
+  <p>Once the timer expires, anyone may call <code>FoMonadGame.triggerSettlement()</code>. The current Vibecoin is <em>unlocked</em> — meaning sells are permanently enabled. The prize pool is split: <strong>90% to the last buyer</strong>, 10% carried forward as seed capital for the next cycle's prize pool. The cycle counter increments and Series A begins again.</p>
+
+  <div class="page-num">§ 02 · Game Phases</div>
+</section>
+
+<!-- ============================================================ § 03 FEES -->
+<section class="section page" id="fees">
+  <div class="section-label">§ 03</div>
+  <h2>Fee Economics</h2>
+
+  <p>Every deposit in every phase is routed according to a fixed basis-point split. There are no hidden fees, no owner wallets, and no parameters that can be updated post-deployment. The splits below are <strong>immutable</strong>.</p>
+
+  <div class="charts-3col">
+    <div class="chart-wrap-sm">
+      <div class="chart-title"><span>Series A</span> · Fee Split</div>
+      <canvas id="chartFeeA" width="200" height="200"></canvas>
+    </div>
+    <div class="chart-wrap-sm">
+      <div class="chart-title"><span>Series B</span> · Fee Split</div>
+      <canvas id="chartFeeB" width="200" height="200"></canvas>
+    </div>
+    <div class="chart-wrap-sm">
+      <div class="chart-title"><span>Pump Phase</span> · Fee Split</div>
+      <canvas id="chartFeeP" width="200" height="200"></canvas>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Destination</th>
+        <th>Series A</th>
+        <th>Series B</th>
+        <th>Pump</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="highlight">Bonding Curve</td>
+        <td class="green">70%</td>
+        <td class="green">80%</td>
+        <td class="green">66%</td>
+        <td>→ Vibecoin tokens minted</td>
+      </tr>
+      <tr style="font-size:13px; opacity:0.75;">
+        <td style="padding-left:28px; color:var(--text-dim);">↳ Buyer tokens (90%)</td>
+        <td class="green" style="font-size:12px;">63%</td>
+        <td class="green" style="font-size:12px;">72%</td>
+        <td class="green" style="font-size:12px;">59.4%</td>
+        <td style="font-size:12px; color:var(--text-dim);">90% of minted tokens → buyer</td>
+      </tr>
+      <tr style="font-size:13px; opacity:0.75;">
+        <td style="padding-left:28px; color:var(--text-dim);">↳ VC holder dividends (10%)</td>
+        <td class="vc" style="font-size:12px;">7%</td>
+        <td class="vc" style="font-size:12px;">8%</td>
+        <td class="vc" style="font-size:12px;">6.6%</td>
+        <td style="font-size:12px; color:var(--text-dim);">10% of minted tokens → VC opt-in holders</td>
+      </tr>
+      <tr>
+        <td class="highlight">Prize Pool</td>
+        <td class="amber">20%</td>
+        <td class="amber">10%</td>
+        <td class="amber">24%</td>
+        <td>→ Winner on expiry</td>
+      </tr>
+      <tr>
+        <td class="highlight">Referral Fee</td>
+        <td class="referral">6%</td>
+        <td class="referral">6%</td>
+        <td class="referral">6%</td>
+        <td>→ Referrer, or protocol if ineligible</td>
+      </tr>
+      <tr>
+        <td class="highlight">Protocol Fee</td>
+        <td class="purple">4%</td>
+        <td class="purple">4%</td>
+        <td class="purple">4%</td>
+        <td>→ foMON dividend pool</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout green">
+    <div class="callout-title">Where Protocol Fees Go</div>
+    The 4% protocol fee is transferred to the <code>FoMonad.sol</code> contract and immediately distributed to opted-in foMON holders via a Synthetix-style per-token accumulator. Fees that arrive while no one is opted in are held and distributed retroactively on the next distribution event. There is no protocol treasury address. There is no team multisig. The fees go directly to holders.
+  </div>
+
+  <h3>Prize Pool Accumulation</h3>
+  <p>The prize pool grows from three sources simultaneously: Series A deposits (20%), Series B deposits (10%), and Pump buys (24%). Native MON sent directly to the contract's <code>receive()</code> function acts as a donation path. Outside the pump phase the full donation goes to the prize pool. During the pump phase, donations split the same way as pump buys — 24% to the prize pool and 76% to the Vibecoin bonding curve — but with no protocol fee, no referral, and no <code>lastBuyer</code> update.</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title"><span>Prize Pool Growth</span> · Illustrative — 1,000 shMON Total Deposits</div>
+    <canvas id="chartPrizeGrowth" height="80"></canvas>
+  </div>
+
+  <h3>Capital Flow</h3>
+  <p>Where shMON actually goes on each deposit. Example shown is a Pump phase buy — Series A and B differ only in the prize pool and curve percentages. Note that Series A and B also avoid the 10% Vibecoin token dividend haircut: the game contract executes both collective buys on behalf of depositors and is never opted into Vibecoin dividends, so 100% of minted tokens flow to claimants rather than 90%.</p>
+
+  <svg viewBox="0 0 820 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:820px;background:var(--bg2);display:block;margin:0 auto;">
+    <defs>
+      <marker id="c-arr-green" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#00e5ff"/></marker>
+      <marker id="c-arr-amber" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#ffe600"/></marker>
+      <marker id="c-arr-cyan" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#ffe600"/></marker>
+      <marker id="c-arr-red" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#ff2d6b"/></marker>
+      <marker id="c-arr-purple" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#8080ff"/></marker>
+      <marker id="c-arr-dim" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#404050"/></marker>
+    </defs>
+
+    <!-- Source: User deposit -->
+    <rect x="20" y="130" width="130" height="60" fill="#0a0a0e" stroke="#00e5ff" stroke-width="1.5"/>
+    <text x="85" y="154" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">100 shMON</text>
+    <text x="85" y="170" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="9">User deposit (Pump)</text>
+    <text x="85" y="184" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="9">via FoMonadGame</text>
+
+    <!-- FoMonadGame splits into 4 -->
+    <!-- Arrow to protocol fee -->
+    <path d="M150,148 L248,58" fill="none" stroke="#8080ff" stroke-width="1.5" marker-end="url(#c-arr-purple)"/>
+    <!-- Arrow to referral -->
+    <path d="M150,155 L248,128" fill="none" stroke="#ffe600" stroke-width="1.5" marker-end="url(#c-arr-cyan)"/>
+    <!-- Arrow to prize pool -->
+    <path d="M150,165 L248,198" fill="none" stroke="#ffe600" stroke-width="1.5" marker-end="url(#c-arr-amber)"/>
+    <!-- Arrow to bonding curve -->
+    <path d="M150,172 L248,268" fill="none" stroke="#00e5ff" stroke-width="1.5" marker-end="url(#c-arr-green)"/>
+
+    <!-- Protocol fee box -->
+    <rect x="250" y="30" width="140" height="55" fill="#0a0a0e" stroke="#8080ff" stroke-width="1"/>
+    <text x="320" y="52" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">4 shMON</text>
+    <text x="320" y="67" text-anchor="middle" fill="#8080ff" font-family="JetBrains Mono, monospace" font-size="9">Protocol Fee (4%)</text>
+    <text x="320" y="79" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">→ FoMonad.distributeProtocolFee()</text>
+
+    <!-- Referral box -->
+    <rect x="250" y="100" width="140" height="55" fill="#0a0a0e" stroke="#ffe600" stroke-width="1"/>
+    <text x="320" y="122" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">6 shMON</text>
+    <text x="320" y="137" text-anchor="middle" fill="#ffe600" font-family="JetBrains Mono, monospace" font-size="9">Referral Fee (6%)</text>
+    <text x="320" y="149" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">→ referrer (or protocol)</text>
+
+    <!-- Prize pool box -->
+    <rect x="250" y="170" width="140" height="55" fill="#0a0a0e" stroke="#ffe600" stroke-width="1"/>
+    <text x="320" y="192" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">24 shMON</text>
+    <text x="320" y="207" text-anchor="middle" fill="#ffe600" font-family="JetBrains Mono, monospace" font-size="9">Prize Pool (24%)</text>
+    <text x="320" y="219" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">held in FoMonadGame</text>
+
+    <!-- Bonding curve box -->
+    <rect x="250" y="240" width="140" height="55" fill="#0a0a0e" stroke="#00e5ff" stroke-width="1"/>
+    <text x="320" y="262" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600">66 shMON</text>
+    <text x="320" y="277" text-anchor="middle" fill="#00e5ff" font-family="JetBrains Mono, monospace" font-size="9">Bonding Curve (66%)</text>
+    <text x="320" y="289" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">→ Vibecoin.buyWithShMon()</text>
+
+    <!-- Protocol fee → foMON holders -->
+    <path d="M390,57 L498,57" fill="none" stroke="#8080ff" stroke-width="1" marker-end="url(#c-arr-purple)"/>
+    <rect x="500" y="33" width="150" height="48" fill="#0a0a0e" stroke="#8080ff" stroke-width="1"/>
+    <text x="575" y="54" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="10">foMON holders</text>
+    <text x="575" y="69" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">opt-in shMON dividends</text>
+
+    <!-- Referral → referrer -->
+    <path d="M390,127 L498,127" fill="none" stroke="#ffe600" stroke-width="1" marker-end="url(#c-arr-cyan)"/>
+    <rect x="500" y="103" width="150" height="48" fill="#0a0a0e" stroke="#ffe600" stroke-width="1"/>
+    <text x="575" y="124" text-anchor="middle" fill="#e8e8f0" font-family="JetBrains Mono, monospace" font-size="10">Referrer</text>
+    <text x="575" y="139" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">safeTransfer via shMON</text>
+
+    <!-- Prize pool → winner + rollover -->
+    <path d="M390,197 L498,180" fill="none" stroke="#ff2d6b" stroke-width="1" marker-end="url(#c-arr-red)"/>
+    <path d="M390,197 L498,215" fill="none" stroke="#404050" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#c-arr-dim)"/>
+    <rect x="500" y="163" width="150" height="34" fill="#0a0a0e" stroke="#ff2d6b" stroke-width="1"/>
+    <text x="575" y="178" text-anchor="middle" fill="#ff2d6b" font-family="JetBrains Mono, monospace" font-size="10">Winner (90%)</text>
+    <text x="575" y="191" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">safeTransfer via shMON</text>
+    <rect x="500" y="203" width="150" height="34" fill="#0a0a0e" stroke="#404050" stroke-width="1"/>
+    <text x="575" y="218" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="10">Rollover (10%)</text>
+    <text x="575" y="231" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">next cycle prize pool seed</text>
+
+    <!-- Bonding curve → buyer tokens + VC dividends -->
+    <path d="M390,267 L498,275" fill="none" stroke="#00e5ff" stroke-width="1" marker-end="url(#c-arr-green)"/>
+    <path d="M390,267 L498,305" fill="none" stroke="#ffe600" stroke-width="1" marker-end="url(#c-arr-amber)"/>
+    <rect x="500" y="258" width="150" height="34" fill="#0a0a0e" stroke="#00e5ff" stroke-width="1"/>
+    <text x="575" y="273" text-anchor="middle" fill="#00e5ff" font-family="JetBrains Mono, monospace" font-size="10">Buyer tokens (90%)</text>
+    <text x="575" y="286" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">of minted Vibecoin</text>
+    <rect x="500" y="296" width="150" height="34" fill="#0a0a0e" stroke="#ffe600" stroke-width="1"/>
+    <text x="575" y="311" text-anchor="middle" fill="#ffe600" font-family="JetBrains Mono, monospace" font-size="10">VC dividends (10%)</text>
+    <text x="575" y="324" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="8">of minted Vibecoin → holders</text>
+  </svg>
+
+  <div class="page-num">§ 03 · Fee Economics</div>
+</section>
+
+
+<!-- ============================================================ § 04 TIMER -->
+<section class="section page" id="timer">
+  <div class="section-label">§ 04</div>
+  <h2>Timer Mechanics</h2>
+
+  <p>The pump phase timer is FoMonad's core engagement mechanic. It begins at <strong>24 hours</strong> after series settlement and extends with each pump buy. The extension function has three properties that matter for game theory:</p>
+
+  <ol style="margin: 0 0 24px 24px; line-height: 2.2;">
+    <li><strong>Diminishing returns</strong> — doubling pump volume does not double the timer</li>
+    <li><strong>Prize-pool aware</strong> — a larger prize pool at settlement produces a higher timer ceiling</li>
+    <li><strong>Bounded</strong> — hard cap at 26 weeks regardless of volume</li>
+  </ol>
+
+  <div class="math-box">
+    <div class="math-eq"><span class="sym">P₀</span> = <span class="val">(prizePoolAtSettlement × 10) / 1e18</span> <span class="note">// prize pool in 0.1-shMON units</span></div>
+    <div class="math-eq"><span class="sym">mrt</span> = <span class="val">(P₀ × MAX_TIMER) / (P₀ + 2,000,000)</span> <span class="note">// prize-pool-scaled ceiling (seconds)</span></div>
+    <div class="math-eq"><span class="sym">timerExtension(x)</span> = <span class="val">(x × mrt × 4) / (x × 4 + MIN_BUY × (mrt − 4))</span> <span class="note">// x = totalPumpDeposited</span></div>
+    <div class="math-eq"><span class="sym">timerExpiry</span> = <span class="val">settlementTimestamp + INITIAL_TIMER + timerExtension(totalPumpDeposited)</span></div>
+  </div>
+
+  <p>At game start (before any pump buy, x = 0) the extension is zero. Substituting exactly one MIN_BUY for x yields <code>timerExtension = 4 seconds</code> regardless of series size or max-round ceiling — a constant built into the formula by construction. Additional pump volume produces diminishing returns, saturating toward <em>mrt</em> as x → ∞. The half-maximum is reached when totalPumpDeposited = MIN_BUY × (mrt − 4) / 4.</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title"><span>Timer Extension</span> · As Fraction of Maximum, vs. Normalized Pump Volume (r = 1 at half-maximum)</div>
+    <canvas id="chartTimer" height="100"></canvas>
+  </div>
+
+  <h3>Timer Precision</h3>
+  <p>The timer is computed in seconds and compared directly against <code>block.timestamp</code>. The <code>previewBuy()</code> view function returns <code>timerExtensionMs</code> — the marginal extension in milliseconds — so front-ends can display fine-grained timer changes for small buys without affecting on-chain logic, which operates at second resolution.</p>
+
+  <h3>Last Buyer Tracking</h3>
+  <p>The <code>lastBuyer</code> state variable is updated on every successful buy and resets to <code>address(0)</code> at cycle start. If the timer expires with <code>lastBuyer == address(0)</code> (i.e., no one bought during the pump phase), the entire prize pool rolls over to the next cycle. This preserves prize pool value across low-volume cycles rather than distributing to an empty address.</p>
+
+  <div class="page-num">§ 04 · Timer Mechanics</div>
+</section>
+
+<!-- ============================================================ § 05 FOMON -->
+<section class="section page" id="fomon">
+  <div class="section-label">§ 05</div>
+  <h2>foMON: The Protocol Token</h2>
+
+  <p>foMON is a fixed-supply ERC-20 with two functions: it gates Series A access and it earns protocol fee dividends. It is not a governance token. There is no governance.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Supply</div>
+      <div class="stat-value">100M</div>
+      <div class="stat-sub">Fixed. Never changes.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Deployer Pre-mine</div>
+      <div class="stat-value red">80M</div>
+      <div class="stat-sub">80%. Commentary, not oversight.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Airdrop Reserve</div>
+      <div class="stat-value amber">20M</div>
+      <div class="stat-sub">Emitted via sigmoid over time</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Dividend Yield</div>
+      <div class="stat-value green">4%</div>
+      <div class="stat-sub">Of all game deposits, in shMON</div>
+    </div>
+  </div>
+
+  <div class="callout red">
+    <div class="callout-title">On the 80% Pre-mine</div>
+    The 80% deployer allocation is <strong>intentional commentary</strong> on standard industry practice. Most token launches feature comparable or worse insider allocations with more elaborate justifications. FoMonad's is at least honest about it. The cynicism is load-bearing: a protocol that satirizes crypto practices while hiding its own pre-mine would undermine its own premise.
+  </div>
+
+  <h3>Dividend Mechanics</h3>
+  <p>foMON uses a Synthetix-style per-token accumulator for dividend distribution. Holders must explicitly <code>FoMonad.optIn()</code> to participate. This design means that:</p>
+  <ul style="margin: 0 0 20px 24px; line-height: 2.2;">
+    <li>Uniswap pool addresses and cold wallets do not dilute the opted-in supply</li>
+    <li>Only active participants earn dividends</li>
+    <li>Transfers preserve opt-in status; opt-out requires an explicit call</li>
+    <li>Fees received while no one is opted in accumulate and are distributed retroactively</li>
+  </ul>
+
+  <pre><code class="comment">// Every pump buy: 4% → foMON contract → distributeProtocolFee()</code>
+<code class="k">function</code> distributeProtocolFee() <code class="k">external</code> {
+    uint256 current = SHMON.balanceOf(address(this));
+    uint256 delta = current - lastKnownShMonBalance;
+    <code class="k">if</code> (delta == 0 || optedInSupply == 0) <code class="k">return</code>;
+    rewardPerTokenStored += (delta * PRECISION) / optedInSupply;
+    lastKnownShMonBalance = current;
+}</pre>
+
+  <h3>Sigmoid Airdrop</h3>
+  <p>The 20M foMON airdrop reserve is emitted gradually during pump phase interactions. The emission ceiling follows a sigmoid curve that is calibrated to release approximately half the reserve within the first three months of protocol operation.</p>
+
+  <div class="math-box">
+    <div class="math-eq"><span class="sym">maxMintable(t)</span> = <span class="val">20M × t² / (t² + T_HALF² × 3)</span></div>
+    <div class="math-eq"><span class="sym">T_HALF</span> = <span class="val">7,889,238 seconds</span> <span class="note">≈ 91.3 days ≈ 3 months</span></div>
+  </div>
+
+  <p>Each eligible buy attempt mints a pseudo-random amount between 1 wei and the remaining sigmoid ceiling. Only EOAs receive airdrops — smart contract wallets (ERC-4337, Safe, etc.) are excluded by the <code>msg.sender == tx.origin</code> check. One airdrop per wallet per block.</p>
+
+  <p>The ceiling approaches 100% asymptotically and never quite reaches it. This means the "up to 20M foMON airdrop" marketing campaign is, in the strictest mathematical sense, valid indefinitely. It also means airdrop emission decelerates toward zero over time — which, by the definitions that tend to appear in token marketing materials, makes foMON a deflationary asset. MON, by contrast, has block rewards and no fixed supply cap. Combined with dividend yield paid in shMON — itself a yield-bearing instrument — foMON holders could reasonably argue they hold a superior store of value to the underlying network token. We are not making this argument. We are merely noting that it can be made.</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title"><span>Airdrop Emission Ceiling</span> · Sigmoid Curve over 12 Months</div>
+    <canvas id="chartSigmoid" height="100"></canvas>
+  </div>
+
+  <div class="page-num">§ 05 · foMON: The Protocol Token</div>
+</section>
+
+<!-- ============================================================ § 06 VIBECOIN -->
+<section class="section page" id="vibecoin">
+  <div class="section-label">§ 06</div>
+  <h2>Vibecoin: The Cycle Token</h2>
+
+  <p>The name is intentional. Memecoins derive their identity from human curation — a community decides the name, the ticker, the lore. Vibecoins derive theirs from entropy. Name, ticker, and on-chain artwork are generated from a block hash seed at the moment of deployment; no human chose them. The result is a token whose entire personality emerged from the chain itself. Whether that makes it more or less legitimate than a manually named memecoin is left as an exercise for the reader.</p>
+
+  <p>Each game cycle produces one Vibecoin — a minimal proxy clone of the Vibecoin implementation contract. Its name, ticker symbol, and on-chain SVG artwork are procedurally generated from a seed derived from <code>blockhash(block.number - 1)</code> combined with the cycle number. No two Vibecoins are identical.</p>
+
+  <h3>Bonding Curve</h3>
+  <p>Each Vibecoin instance uses a <strong>linear price function</strong>. This is, intentionally, the simplest possible bonding curve. FoMonad is designed to be fully legible: the mechanics are explicit, the math is disclosed, and nothing is obscured in the UI. The linear curve fits that posture — price at any moment is a single arithmetic expression, and any participant can verify what they'll receive before they buy. A steeper curve was also deliberately avoided: sharper price functions punish late sellers disproportionately during the post-settlement exit, concentrating recoverable value in the hands of whoever exits first. The linear curve keeps the sell run more orderly — the price decay is proportional to the tokens sold, not accelerating against the sellers still in the queue.</p>
+
+  <div class="math-box">
+    <div class="math-eq"><span class="sym">P(s)</span> = <span class="val">P₀ + K × s</span> <span class="note">// marginal price at supply s</span></div>
+    <div class="math-eq"><span class="sym">C(S)</span> = <span class="val">P₀ × S + K × S² / 2</span> <span class="note">// total cost to reach supply S</span></div>
+    <div class="math-eq"><span class="sym">P₀</span> = <span class="val">1e9 wei shMON/token</span> <span class="note">// ≈ 1 nano-shMON — intentionally giga-cheap</span></div>
+    <div class="math-eq"><span class="sym">K</span> = <span class="val">1e36 × C / (2 × (C + K_HALF)²)</span> <span class="note">// derived from series deposits</span></div>
+    <div class="math-eq"><span class="sym">K_HALF</span> = <span class="val">2,000,000 shMON</span> <span class="note">// series size at which P_watermark = 0.5 shMON</span></div>
+  </div>
+
+  <h3>The Watermark Price</h3>
+  <p>K is derived so that the marginal price at the post-series supply level — the <em>watermark price</em> — follows a simple formula:</p>
+
+  <div class="math-box">
+    <div class="math-eq"><span class="sym">P_watermark(C)</span> = <span class="val">C / (C + K_HALF)</span> <span class="note">// in shMON, approaches 1.0 as C → ∞</span></div>
+  </div>
+
+  <p>This means the initial Pump phase entry price is <strong>fully predictable</strong> from the series deposit total. At K_HALF (2M shMON in series deposits), the entry price is exactly 0.5 shMON per token. Smaller series → cheaper entry price → steeper potential upside.</p>
+
+  <p>The asymptote at 1 shMON is not incidental. The formula keeps the watermark price proportional to series size while ensuring it never crosses 1 shMON — which in turn ensures the resulting token supply stays in degen territory. Balances in the millions or billions, not fractions. Large numbers feel more significant than small ones. This is known.</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title"><span>Watermark Entry Price</span> · vs. Series Deposit Size</div>
+    <canvas id="chartWatermark" height="100"></canvas>
+  </div>
+
+  <h3>Token Minting Math</h3>
+  <p>Given a shMON deposit <em>d</em> at current supply <em>S</em>, the tokens minted are derived by solving <em>C(S + tokens) = C(S) + d</em>:</p>
+
+  <div class="math-box">
+    <div class="math-eq"><span class="sym">p</span> = <span class="val">P₀ + K × S / 1e18</span> <span class="note">// current marginal price</span></div>
+    <div class="math-eq"><span class="sym">sqrtDisc</span> = <span class="val">√(p² + 2K × d)</span></div>
+    <div class="math-eq"><span class="sym">tokens</span> = <span class="val">(sqrtDisc - P₀) × 1e18 / K - S</span></div>
+  </div>
+
+  <p>This derivation avoids iterative approximation entirely. The square root is computed via OpenZeppelin's <code>Math.sqrt()</code>. Overflow analysis is documented in-contract: with Monad's total supply bounded at 100B MON, the shMON balance can never exceed that figure, and all intermediate values remain safely within uint256.</p>
+
+  <h3>Sell Pricing</h3>
+  <p>Selling is the inverse: given tokens to sell, compute the shMON refund as <em>C(S) - C(S - tokens)</em>. The refund is capped against <code>lastKnownBalance</code> — the tracked curve reserve — to prevent a class of attacks that exploit balance discrepancies.</p>
+
+  <div class="callout green">
+    <div class="callout-title">No Slippage Protection</div>
+    Neither buys nor sells implement a <code>minTokensOut</code> or <code>minShMonOut</code> guard. In a rugpull exit race, a revert puts the seller in a strictly worse position than accepting a worse price — wasted gas and a delayed exit while the curve moves further against them. Adding slippage protection would primarily benefit bot operators with instant retry infrastructure. FoMonad optimizes for human participants.
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-title"><span>Bonding Curve Shape</span> · Price vs. Supply (Normalized, Three Series Sizes)</div>
+    <canvas id="chartBondingCurve" height="100"></canvas>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">K is Bounded</div>
+    K is maximized when C = K_HALF (series deposits = 2M shMON), with K_max ≈ 6.25×10¹⁰. This bound guarantees that all bonding curve arithmetic remains within uint256 at any realistic supply level, without requiring <code>mulDiv</code> in the hot path. The contract comments include full overflow analysis.
+  </div>
+
+  <h3>Token Dividends</h3>
+  <p>Vibecoin uses the same SNX accumulator pattern as foMON, but denominated in <em>Vibecoin tokens</em> rather than shMON. The dividend source is a haircut on every buy and sell transaction:</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title"><span>Vibecoin Flow</span> · Per Buy and Per Sell</div>
+    <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+      <!-- BUY side -->
+      <text x="20" y="24" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="0.1em">BUY</text>
+      <rect x="20" y="35" width="120" height="40" fill="#0a0a0e" stroke="#00e5ff" stroke-width="1"/>
+      <text x="80" y="60" text-anchor="middle" fill="#c8c8d8" font-family="JetBrains Mono, monospace" font-size="11">100 shMON in</text>
+
+      <line x1="140" y1="55" x2="210" y2="55" stroke="#242430" stroke-width="1"/>
+      <text x="175" y="48" text-anchor="middle" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="9">mint tokens</text>
+
+      <rect x="210" y="35" width="130" height="40" fill="#0a0a0e" stroke="#242430" stroke-width="1"/>
+      <text x="275" y="57" text-anchor="middle" fill="#c8c8d8" font-family="JetBrains Mono, monospace" font-size="11">rawTokens minted</text>
+
+      <line x1="340" y1="55" x2="400" y2="90" stroke="#ffe600" stroke-width="1.5"/>
+      <text x="400" y="88" fill="#ffe600" font-family="JetBrains Mono, monospace" font-size="10">10% → contract</text>
+      <text x="400" y="103" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="9">(dividend pool)</text>
+
+      <line x1="340" y1="55" x2="400" y2="30" stroke="#00e5ff" stroke-width="1.5"/>
+      <text x="400" y="28" fill="#00e5ff" font-family="JetBrains Mono, monospace" font-size="10">90% → buyer</text>
+
+      <!-- SELL side -->
+      <text x="20" y="150" fill="#9898a8" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="0.1em">SELL</text>
+      <rect x="20" y="160" width="120" height="40" fill="#0a0a0e" stroke="#ff2d6b" stroke-width="1"/>
+      <text x="80" y="185" text-anchor="middle" fill="#c8c8d8" font-family="JetBrains Mono, monospace" font-size="11">N tokens in</text>
+
+      <line x1="140" y1="180" x2="210" y2="180" stroke="#242430" stroke-width="1"/>
+
+      <rect x="210" y="160" width="130" height="40" fill="#0a0a0e" stroke="#242430" stroke-width="1"/>
+      <text x="275" y="182" text-anchor="middle" fill="#c8c8d8" font-family="JetBrains Mono, monospace" font-size="11">split tokens</text>
+
+      <line x1="340" y1="180" x2="400" y2="215" stroke="#ffe600" stroke-width="1.5"/>
+      <text x="400" y="213" fill="#ffe600" font-family="JetBrains Mono, monospace" font-size="10">10% → contract</text>
+
+      <line x1="340" y1="180" x2="400" y2="155" stroke="#ff2d6b" stroke-width="1.5"/>
+      <text x="400" y="153" fill="#ff2d6b" font-family="JetBrains Mono, monospace" font-size="10">90% burned → shMON out</text>
+    </svg>
+  </div>
+
+  <h3>Lifecycle & Unlock</h3>
+  <p>Before <code>FoMonadGame.triggerSettlement()</code> is called, Vibecoin is in a <em>pre-rugpull</em> state. Sells are blocked. Buys are only permitted via the game contract. This ensures the pump phase plays out on the bonding curve without external sell pressure. Once settlement is triggered, the Vibecoin is permanently unlocked — sells are available to any holder, forever.</p>
+
+  <p>Post-unlock, buyers may also interact with the Vibecoin directly via <code>Vibecoin.buyWithShMon()</code> or <code>Vibecoin.buy()</code>, bypassing the game contract entirely. These direct buys carry <strong>no protocol fee, no referral fee, and no prize pool contribution</strong> — the full deposit goes to the bonding curve. The rugpull has already happened; there is nothing left to fund.</p>
+
+  <h3>Series Token Claims</h3>
+  <p>Series A and B participants do not receive tokens immediately. Instead, their proportional share of the collective buy is tracked, and they may call <code>FoMonadGame.claimSeriesATokens(cycleId)</code> or <code>FoMonadGame.claimSeriesBTokens(cycleId)</code> at any time after settlement. Historical claims are supported for any past cycle — no expiry.</p>
+
+  <h3>On-Chain Stats</h3>
+  <p>Each Vibecoin tracks: all-time high and low price (with flags for whether ATH/ATL occurred post-unlock), cumulative volume, total buy/sell counts, and a 25-slot hourly ring buffer for 24-hour volume computation.</p>
+
+  <div class="page-num">§ 06 · Vibecoin: The Cycle Token</div>
+</section>
+
+<!-- ============================================================ § 07 SHMON -->
+<section class="section page" id="shmon">
+  <div class="section-label">§ 07</div>
+  <h2>shMON Integration</h2>
+
+  <p>shMON is FastLane Protocol's liquid staking token for Monad. Depositing MON into the shMON vault yields a share representing earning rights over MON staking rewards. The shMON/MON exchange rate appreciates over time.</p>
+
+  <p>FoMonad wraps all incoming MON to shMON <em>immediately</em> on receipt, via <code>SHMON.deposit{value: msg.value}(msg.value, address(this))</code>. This means:</p>
+
+  <ul style="margin: 0 0 20px 24px; line-height: 2.2;">
+    <li>The prize pool earns staking yield while it sits waiting for the timer to expire</li>
+    <li>All payouts are in shMON — the exchange rate to MON is determined by the FastLane vault and accrues over time</li>
+    <li>Series deposits earn yield between deposit and settlement</li>
+    <li>The bonding curve reserve earns yield</li>
+  </ul>
+
+  <div class="callout cyan">
+    <div class="callout-title">Trust Model</div>
+    The contracts treat shMON as a trusted external dependency. The in-code documentation notes that shMON's <code>deposit()</code> and <code>transfer()</code> functions contain no external calls or token hooks, and its withdrawal path follows checks-effects-interactions with its own reentrancy guard. This trust assumption is explicitly documented in <code>Vibecoin.sol</code>.
+  </div>
+
+  <div class="page-num">§ 07 · shMON Integration</div>
+</section>
+
+<!-- ============================================================ § 08 SECURITY -->
+<section class="section page" id="security">
+  <div class="section-label">§ 08</div>
+  <h2>Security &amp; Immutability</h2>
+
+  <h3>No Admin Functions</h3>
+  <p>There are no owner-callable functions. There is no <code>Ownable</code> import. There is no <code>onlyOwner</code> modifier anywhere in the codebase. The contracts cannot be paused, upgraded, or modified after deployment. This is an explicit design decision and is described as "load-bearing" in the contract comments — the protocol's credibility depends on the impossibility of after-the-fact changes.</p>
+
+  <h3>EIP-1153 Reentrancy Guards</h3>
+  <p>FoMonadGame uses transient storage (EIP-1153, available on Monad) for reentrancy guards rather than the traditional SSTORE-based pattern. Transient storage auto-resets at the end of each transaction, is cheaper to write, and achieves identical security properties.</p>
+
+  <pre><span class="c">// Enter</span>
+<span class="k">assembly</span> ("memory-safe") {
+    <span class="k">if</span> tload(<span class="v">0</span>) { revert(<span class="v">0</span>, <span class="v">0</span>) }
+    tstore(<span class="v">0</span>, <span class="v">1</span>)
+}
+
+<span class="c">// Exit</span>
+<span class="k">assembly</span> ("memory-safe") {
+    tstore(<span class="v">0</span>, <span class="v">0</span>)
+}</pre>
+
+  <h3>Vibecoin Reentrancy: Delta Pattern</h3>
+  <p>Vibecoin's buy function uses a balance-delta pattern rather than a reentrancy guard. The contract computes <em>how much shMON arrived since the last checkpoint</em> rather than trusting a caller-supplied amount. If a reentrant call were to execute during a shMON transfer (which cannot happen given shMON's implementation, but is considered anyway), the reentrant call would consume the delta and the outer call would revert on delta == 0 — making reentrancy self-defeating.</p>
+
+  <h3>Randomness</h3>
+  <p>Two constructs use pseudo-randomness: the airdrop amount and the Vibecoin seed. Both use <code>keccak256(abi.encodePacked(block.prevrandao, nonce))</code>. The contracts explicitly note that if validators cared enough about these outputs to manipulate <code>prevrandao</code>, the protocol would already be successful enough that validator manipulation would be a compliment. The design accepts this as a reasonable tradeoff at current stake levels.</p>
+
+  <h3>EOA Check</h3>
+  <p>The <code>msg.sender == tx.origin</code> check gates automatic foMON dividend opt-in and airdrop eligibility. Smart contract wallets receive neither. This is <em>intentional</em> and <em>documented</em> — EOA-origin transactions produce better on-chain engagement metrics and the automatic opt-in creates stickier participation. Smart wallet users can participate but must manually opt in and will not receive airdrops.</p>
+
+  <h3>Minimum Deposit</h3>
+  <p>All buy/deposit functions enforce a minimum of <strong>15 shMON</strong> (mainnet). This prevents dust sybil attacks on the referral system and ensures timer extensions are non-trivial.</p>
+
+  <h3>No Token Rescue</h3>
+  <p>Both FoMonad.sol and Vibecoin.sol deliberately omit token rescue functions. Any non-protocol tokens airdropped to these addresses are permanently stuck. This is accepted as a non-issue because the only realistic candidates are worthless spam tokens, and adding a rescue function would require an admin — which contradicts the immutability guarantee.</p>
+
+  <div class="page-num">§ 08 · Security &amp; Immutability</div>
+</section>
+
+<!-- ============================================================ § 09 REFERRALS -->
+<section class="section page" id="referrals">
+  <div class="section-label">§ 09</div>
+  <h2>Referral System</h2>
+
+  <p>FoMonad includes an on-chain referral system with permanent code ownership, participation-based eligibility requirements, and a minimum deposit threshold to prevent dust sybil attacks.</p>
+
+  <h3>Code Registration</h3>
+  <p>Any eligible address may register a <code>bytes32</code> referral code via <code>FoMonadGame.registerReferral()</code>. Codes are permanently owned by the first registrant — they cannot be released or transferred. This creates a first-come-first-served brand ownership dynamic: desirable codes (ENS-style names, community handles) are worth registering early.</p>
+
+  <h3>Eligibility Requirements</h3>
+  <p>To register or earn referral fees, an address must meet at least one of:</p>
+
+  <table>
+    <thead>
+      <tr><th>Condition</th><th>Threshold</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Series A deposits this cycle</td><td class="num">≥ 0.1% of total Series A</td></tr>
+      <tr><td>Series B deposits this cycle</td><td class="num">≥ 0.1% of total Series B</td></tr>
+      <tr><td>Vibecoin balance</td><td class="num">≥ 0.1% of Vibecoin total supply</td></tr>
+    </tbody>
+  </table>
+
+  <p>If the referrer is ineligible at the time of a deposit, the referral fee falls back to the protocol fee distribution. Eligibility is re-checked on each deposit — a referrer who was once eligible can become ineligible if the pool grows around them.</p>
+
+  <h3>Self-Referral</h3>
+  <p>The contract explicitly does not block self-referral, noting in the source: <em>"this is trivially bypassable via a second wallet anyway, so blocking it adds complexity without meaningfully preventing the behaviour."</em></p>
+
+  <div class="page-num">§ 09 · Referral System</div>
+</section>
+
+
+<!-- ============================================================ § 10 CONTRACTS -->
+<section class="section page" id="contracts">
+  <div class="section-label">§ 10</div>
+  <h2>Contract Reference</h2>
+
+  <h3>Deployed Contracts</h3>
+  <table>
+    <thead>
+      <tr><th>Contract</th><th>Address</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="highlight">FoMonad.sol</td>
+        <td class="num" style="font-size:11px;"><a href="https://monadvision.com/address/0x9f4834920e7ad3275F3cf6587Ad9c9F7d387F1CF">0x9f4834920e7ad3275F3cf6587Ad9c9F7d387F1CF</a></td>
+        <td>foMON token, dividends, airdrop</td>
+      </tr>
+      <tr>
+        <td class="highlight">FoMonadGame.sol</td>
+        <td class="num" style="font-size:11px;"><a href="https://monadvision.com/address/0xd2C45789A6A26Cbb961E7E1B65fA2B5BB3872639">0xd2C45789A6A26Cbb961E7E1B65fA2B5BB3872639</a></td>
+        <td>Game engine, prize pool, referrals</td>
+      </tr>
+      <tr>
+        <td class="highlight">Vibecoin.sol (impl)</td>
+        <td class="num" style="font-size:11px;"><a href="https://monadvision.com/address/0xad269FBeC6ebbAD424FCdC0f8e62F2056A72B403">0xad269FBeC6ebbAD424FCdC0f8e62F2056A72B403</a></td>
+        <td>Bonding curve clone implementation</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Key Constants</h3>
+  <table>
+    <thead>
+      <tr><th>Constant</th><th>Value</th><th>Significance</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>TOTAL_SUPPLY</td><td class="num">100,000,000 foMON</td><td>Fixed forever</td></tr>
+      <tr><td>DEPLOYER_SHARE</td><td class="red">80,000,000 foMON</td><td>Pre-mine (intentional)</td></tr>
+      <tr><td>AIRDROP_RESERVE</td><td class="amber">20,000,000 foMON</td><td>Sigmoid emission</td></tr>
+      <tr><td>T_HALF</td><td class="num">7,889,238 sec</td><td>Sigmoid half-time ≈ 3 months</td></tr>
+      <tr><td>P0</td><td class="num">1e9 wei</td><td>Initial curve price (1 nano-shMON)</td></tr>
+      <tr><td>K_HALF</td><td class="num">2,000,000 shMON</td><td>Series size at P_watermark = 0.5</td></tr>
+      <tr><td>PUMP_PRIZE</td><td class="red">2400 bps (24%)</td><td>Pump phase prize fraction</td></tr>
+      <tr><td>WINNER_PRIZE_BPS</td><td class="green">9000 bps (90%)</td><td>Winner's share of prize pool</td></tr>
+      <tr><td>SERIES_A_KICKOFF</td><td class="num">7,500 shMON (MIN_BUY × 500)</td><td>Threshold to start Series A countdown</td></tr>
+      <tr><td>MIN_BUY</td><td class="num">15 shMON (mainnet)</td><td>Minimum deposit in all phases</td></tr>
+      <tr><td>INITIAL_TIMER</td><td class="num">24 hours (mainnet)</td><td>Starting timer at settlement</td></tr>
+      <tr><td>MAX_TIMER</td><td class="num">26 weeks (mainnet)</td><td>Timer ceiling regardless of volume</td></tr>
+    </tbody>
+  </table>
+
+  <h3>License</h3>
+  <p>All contracts are licensed under WTFPL. The source code is available for inspection, forking, and deployment. If you deploy your own FoMonad instance, you are not satirizing the protocol — you are continuing the tradition.</p>
+
+  <div class="page-num">§ 10 · Contract Reference</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-col">
+      <h5>FoMonad</h5>
+      <p>A fully transparent extraction mechanism on Monad. Built by Disillusionary. The contracts do not know who built them. They do not care. They will run until they are told to stop, which will be never, because there is no one to tell them.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Links</h5>
+      <p>
+        <a href="https://fomonad.wtf">fomonad.wtf</a><br>
+        <a href="https://github.com/FoMonad/fomonad-contracts">github.com/FoMonad/fomonad-contracts</a><br>
+        <a href="https://monadvision.com">Monad Network (Chain ID: 143)</a><br>
+        <a href="https://shmonad.xyz">shmonad.xyz</a><br>
+        WTFPL License
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CHART CONFIGURATION
+// ============================================================
+
+Chart.defaults.color = '#9898a8';
+Chart.defaults.borderColor = '#18181e';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const GREEN = '#00e5ff';
+const RED = '#ff2d6b';
+const AMBER = '#ffe600';
+const CYAN = '#ffe600';
+const PURPLE = '#9898ff';
+const DIM = '#242430';
+const TEXT = '#c8c8d8';
+
+// ---- Fee split donuts ----
+function makeFeeDonut(id, data, colors) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        data: data.values,
+        backgroundColor: colors,
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 12,
+            boxWidth: 10,
+            font: { size: 10 }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` ${ctx.label}: ${ctx.parsed}%`
+          }
+        }
+      },
+      animation: { duration: 800 }
+    }
+  });
+}
+
+// Fee chart specific colours
+const FEE_CURVE   = GREEN;
+const FEE_VC      = '#00a8c0';
+const FEE_RUG     = AMBER;
+const FEE_REF     = '#9898ff';
+const FEE_FOMON   = '#9898ff';
+
+makeFeeDonut('chartFeeA', {
+  labels: ['Bonding Curve', 'Prize Pool', 'Referral', 'Protocol Fee'],
+  values: [70, 20, 6, 4]
+}, [GREEN, AMBER, '#606080', '#9898ff']);
+
+makeFeeDonut('chartFeeB', {
+  labels: ['Bonding Curve', 'Prize Pool', 'Referral', 'Protocol Fee'],
+  values: [80, 10, 6, 4]
+}, [GREEN, AMBER, '#606080', '#9898ff']);
+
+makeFeeDonut('chartFeeP', {
+  labels: ['Bonding Curve', 'VC Hodler Dividends', 'Prize Pool', 'Referral', 'Protocol Fee'],
+  values: [59.4, 6.6, 24, 6, 4]
+}, [GREEN, '#00a8c0', AMBER, '#606080', '#9898ff']);
+
+// ---- Prize pool growth ----
+const prizeGrowthCtx = document.getElementById('chartPrizeGrowth');
+if (prizeGrowthCtx) {
+  // 1000 shMON total: 300 in SeriesA, 200 in SeriesB, 500 in Pump
+  const labels = ['0', '100', '200', '300', '400', '500', '600', '700', '800', '900', '1000'];
+  // Piecewise: 0-300 SeriesA (20%), 300-500 SeriesB (10%), 500-1000 Pump (24%)
+  const prizeVals = labels.map(l => {
+    const d = parseFloat(l);
+    let p = 0;
+    if (d <= 300) p = d * 0.20;
+    else if (d <= 500) p = 300 * 0.20 + (d - 300) * 0.10;
+    else p = 300 * 0.20 + 200 * 0.10 + (d - 500) * 0.24;
+    return p.toFixed(1);
+  });
+
+  new Chart(prizeGrowthCtx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Prize Pool (shMON)',
+        data: prizeVals,
+        borderColor: AMBER,
+        backgroundColor: 'rgba(255,230,0,0.08)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0,
+        pointRadius: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        annotation: {},
+        tooltip: {
+          callbacks: {
+            label: c => ` Prize pool: ${c.parsed.y} shMON`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Total Deposits (shMON)', color: '#9898a8', font: {size:10} },
+          grid: { color: '#0f0f14' }
+        },
+        y: {
+          title: { display: true, text: 'Prize Pool (shMON)', color: '#9898a8', font: {size:10} },
+          grid: { color: '#0f0f14' }
+        }
+      }
+    }
+  });
+}
+
+// ---- Watermark price chart ----
+const wmCtx = document.getElementById('chartWatermark');
+if (wmCtx) {
+  const K_HALF = 2000000;
+  const points = [];
+  const labels = [];
+  for (let c = 0; c <= 10000000; c += 250000) {
+    labels.push((c / 1000000).toFixed(2) + 'M');
+    points.push((c / (c + K_HALF)).toFixed(4));
+  }
+
+  new Chart(wmCtx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'P_watermark (shMON)',
+        data: points,
+        borderColor: GREEN,
+        backgroundColor: 'rgba(0,229,255,0.06)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => ` Entry price: ${c.parsed.y} shMON/token`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Series Deposit Size (shMON)', color: '#9898a8', font: {size:10} },
+          ticks: { maxTicksLimit: 8 },
+          grid: { color: '#0f0f14' }
+        },
+        y: {
+          min: 0, max: 1,
+          title: { display: true, text: 'Watermark Price (shMON)', color: '#9898a8', font: {size:10} },
+          grid: { color: '#0f0f14' },
+          ticks: {
+            callback: v => v.toFixed(1) + ' shMON'
+          }
+        }
+      }
+    }
+  });
+}
+
+// ---- Bonding curve shape ----
+const bcCtx = document.getElementById('chartBondingCurve');
+if (bcCtx) {
+  // x-axis: normalized supply (0 = post-series entry, 1 = watermark supply)
+  // y-axis: actual price in shMON
+  // P(s_norm) ≈ s_norm * P_watermark (linear curve, P0 ≈ 0)
+  // P_watermark(C) = C / (C + K_HALF)
+  // Three series sizes produce three distinct lines with different slopes.
+
+  const K_HALF = 2_000_000;
+  const numPts = 100;
+
+  function curvePts(C_shmon) {
+    const P_wm = C_shmon / (C_shmon + K_HALF);
+    const pts = [];
+    for (let i = 0; i <= numPts; i++) {
+      const s_frac = i / numPts;
+      pts.push((s_frac * P_wm).toFixed(4));
+    }
+    return pts;
+  }
+
+  const labels = Array.from({length: numPts+1}, (_, i) => (i/numPts).toFixed(2));
+
+  new Chart(bcCtx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Small Series (C=0.1M shMON) · P_wm ≈ 0.048',
+          data: curvePts(100_000),
+          borderColor: '#606080',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0,
+          fill: false
+        },
+        {
+          label: 'Medium Series (C=2M shMON) · P_wm = 0.5',
+          data: curvePts(2_000_000),
+          borderColor: GREEN,
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0,
+          fill: false
+        },
+        {
+          label: 'Large Series (C=10M shMON) · P_wm ≈ 0.833',
+          data: curvePts(10_000_000),
+          borderColor: AMBER,
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { padding: 16, boxWidth: 12, font: {size: 10} }
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: c => ` ${c.dataset.label.split('·')[0].trim()}: ${c.parsed.y} shMON`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Supply (normalized: 0 = post-series entry, 1 = watermark supply)', color: '#9898a8', font:{size:10} },
+          ticks: { maxTicksLimit: 6 },
+          grid: { color: '#0f0f14' }
+        },
+        y: {
+          min: 0,
+          max: 1,
+          title: { display: true, text: 'Price (shMON per token)', color: '#9898a8', font:{size:10} },
+          grid: { color: '#0f0f14' },
+          ticks: { callback: v => v.toFixed(2) + ' shMON' }
+        }
+      }
+    }
+  });
+}
+
+// ---- Timer extension ----
+const timerCtx = document.getElementById('chartTimer');
+if (timerCtx) {
+  // timerExtension(x) = (x * mrt * 4) / (x * 4 + MIN_BUY * (mrt - 4))
+  // Normalise: let r = x / x_half where x_half = MIN_BUY * (mrt - 4) / 4 ≈ mrt * MIN_BUY / 4
+  // Substituting: frac = r / (r + 1)   (fraction of mrt reached at pump volume r × x_half)
+  // r = 0 → 0%, r = 1 → 50%, r = 3 → 75%, r = 9 → 90%
+  const labels = [];
+  const data = [];
+  for (let i = 0; i <= 100; i++) {
+    const r = i * 0.1;
+    labels.push(r.toFixed(1));
+    const frac = r / (r + 1);
+    data.push(frac.toFixed(4));
+  }
+
+  new Chart(timerCtx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Timer Extension / Max Extension',
+        data,
+        borderColor: AMBER,
+        backgroundColor: 'rgba(255,230,0,0.07)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => ` ${(c.parsed.y * 100).toFixed(1)}% of max timer extension`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Pump Volume / Half-Max Volume (r, dimensionless)', color: '#9898a8', font:{size:10} },
+          ticks: { maxTicksLimit: 10 },
+          grid: { color: '#0f0f14' }
+        },
+        y: {
+          min: 0, max: 1,
+          title: { display: true, text: 'Fraction of Max Timer Extension', color: '#9898a8', font:{size:10} },
+          grid: { color: '#0f0f14' },
+          ticks: { callback: v => (v * 100).toFixed(0) + '%' }
+        }
+      }
+    }
+  });
+}
+
+// ---- Sigmoid airdrop ----
+const sigCtx = document.getElementById('chartSigmoid');
+if (sigCtx) {
+  const T_HALF = 91.3; // days
+  const labels = [];
+  const data = [];
+  const velData = [];
+  for (let d = 0; d <= 365; d += 5) {
+    labels.push(d === 0 ? '0' : d % 30 === 0 ? d + 'd' : '');
+    const t = d;
+    const tSq = t * t;
+    const tHalfSq = T_HALF * T_HALF;
+    const frac = tSq / (tSq + tHalfSq * 3);
+    data.push((frac * 20).toFixed(2));
+  }
+
+  new Chart(sigCtx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: '% of Total Supply Unlocked',
+        data,
+        borderColor: GREEN,
+        backgroundColor: 'rgba(0,229,255,0.07)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => ` ${c.parsed.y}% of total supply unlocked`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Days Since Deployment', color: '#9898a8', font:{size:10} },
+          ticks: { maxTicksLimit: 12 },
+          grid: { color: '#0f0f14' }
+        },
+        y: {
+          min: 0, max: 20,
+          title: { display: true, text: 'Max Mintable (% of Total Supply)', color: '#9898a8', font:{size:10} },
+          grid: { color: '#0f0f14' },
+          ticks: { callback: v => v + '%' }
+        }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
