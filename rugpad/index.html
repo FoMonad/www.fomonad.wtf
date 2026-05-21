@@ -1,74 +1,106 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>FoMonad: Coming Soon</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="FoMonad is launching soon. A consensual rugpull on Monad.">
-		<link rel="icon" href="/fomonad-named.png" type="image/png">
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoMonad — Consensual Rugpull</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-		<!-- OpenGraph -->
-		<meta property="og:type" content="website">
-		<meta property="og:title" content="FoMonad — Coming Soon">
-		<meta property="og:description" content="FoMonad is launching soon. A consensual rugpull on Monad.">
-		<meta property="og:image" content="https://www.fomonad.wtf/fomonad-named.png">
-		<meta property="og:url" content="https://www.fomonad.wtf/rugpad/">
+    :root {
+      --bg: #060608;
+      --bg2: #0a0a0e;
+      --panel: #0d0d1a;
+      --border: #252540;
+      --cyan: #00e5ff;
+      --red: #ff2d6b;
+      --yellow: #ffe600;
+      --green: #00ff9d;
+      --muted: #3a3a4a;
+      --text: #d8d8e8;
+      --dim: #7070888;
+      --mono: 'Share Tech Mono', monospace;
+      --display: 'Bebas Neue', sans-serif;
+      --body: 'DM Sans', sans-serif;
+      --glow-cyan: 0 0 10px #00e5ff66, 0 0 30px #00e5ff22;
+      --glow-red:  0 0 10px #ff2d6b66, 0 0 30px #ff2d6b22;
+    }
 
-		<!-- Twitter/X -->
-		<meta name="twitter:card" content="summary">
-		<meta name="twitter:site" content="@fomonad_wtf">
-		<meta name="twitter:title" content="FoMonad — Coming Soon">
-		<meta name="twitter:description" content="FoMonad is launching soon. A consensual rugpull on Monad.">
-		<meta name="twitter:image" content="https://www.fomonad.wtf/fomonad-named.png">
-		<style>
-			body {
-				background: #000;
-				color: #dde;
-				font-family: monospace;
-				text-align: center;
-			}
-			h1::after {
-				content: "\00a0";
-				display: inline-block;
-				transform: translateY(0em);
-				animation: blink 1s infinite step-start;
-			}
-			a {
-				color: #aae;
-			}
-			a::visited, a::active {
-				color: #eae;
-			}
-			p {
-				max-width: 500px;
-			}
-			@keyframes blink {
-				0% {
-					background: #dde;
-				}
-				50% {
-					background: transparent;
-				}
-				100% {
-					background: #dde;
-				}
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 15px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-			}
-			body > * {
-				margin: 1em auto;
-			}
-			body > img {
-				display: block;
-				height: min(400px, 80vh);
-				border: 1px solid #dde;
-			}
-		</style>
-	</head>
-	<body>
-		<h1>Coming soon...</h1>
-		<img src="../fomonad-named.svg">
-		<p>You're very early.</p>
-		<p>FoMonad is currently only available <a href="/rugpad_testnet/">on testnet</a>.</p>
-		<p>[ <a href="https://discord.gg/sWJPYz6gUH">Discord</a> ] [ <a href="https://t.me/fomonad">Telegram</a> ] [ <a href="https://x.com/fomonad_wtf">X (Twitter)</a> ]</p>
-	</body>
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 3px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.4;
+    }
+
+    #app {
+      position: relative;
+      z-index: 1;
+    }
+
+    #loading-spinner {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2rem;
+      font-family: var(--body);
+      z-index: 10000;
+    }
+
+    #loading-spinner::before {
+      content: '';
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid var(--border);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-1pf_bSyf.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/utils-B0Fw2xa_.js">
+  <link rel="modulepreload" crossorigin href="./assets/localBatchGatewayRequest-BDnqlmbC.js">
+</head>
+<body>
+  <div id="loading-spinner">
+    <span>Vibechecking... (JavaScript must be enabled)</span>
+  </div>
+</body>
 </html>
