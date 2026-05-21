@@ -218,19 +218,19 @@ body {
   <div id="content"><div class="status-msg">CONNECTING</div></div>
   <div class="footer">
     <span><span class="pulse" id="pulse"></span><span id="footerStatus">—</span></span>
-    <a href="./rugpad_testnet/" target="_top"
+    <a href="./rugpad/" target="_top"
        style="color:var(--cyan); letter-spacing:2px; font-size:9px; padding: 4px 8px ">
-      OPEN APP (TESTNET) →
+      OPEN APP →
     </a>
   </div>
 </div>
 
 <script>
 'use strict';
-const RPC    = 'https://testnet-rpc.monad.xyz';
-const RUGPAD = '0x681ddD0CF31575777f82c98653Cf11A35c519f6d';
-const SHMON  = '0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9';
-const FOMON  = '0x045882232FEC3c23CF84a9E589471b7Da92A3C96';
+const RPC    = 'https://rpc.monad.xyz';
+const RUGPAD = '0xd2C45789A6A26Cbb961E7E1B65fA2B5BB3872639';
+const SHMON  = '0x1B68626dCa36c7fE922fD2d55E4f631d962dE19c';
+const FOMON  = '0x9f4834920e7ad3275F3cf6587Ad9c9F7d387F1CF';
 const SEL_GAMESTATE    = '0x2e2d1e56'; // gameState(bool)
 const SEL_PREVIEW      = '0x91767552'; // previewUnstake(uint256)
 const SEL_AIRDROP_MINTED = '0x56eb4654'; // totalAirdropMinted()
@@ -560,7 +560,7 @@ function fmtFoMON(wei) {
 
 function statsHtml(st, showLastBuyer = false, isSettled = false, airdrop = null) {
   const prizeWei   = st.prizePool * 9n / 10n;
-  const prizeLabel = isSettled ? 'LAST BUYER RUGGED' : 'LAST BUYER RUGGING';
+  const prizeLabel = isSettled ? 'LAST BUYER RUGGED' : 'RUGPULL REWARD';
 
   let html = `
     <div class="stat-row">
