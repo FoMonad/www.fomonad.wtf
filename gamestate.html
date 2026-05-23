@@ -496,7 +496,7 @@ function renderWidget() {
 
   } else if (phase === 1) {
     // SERIES_B
-    html += `<div class="status-msg">${st.cycle <= 1 ? "EXTENDED inaugural" : ""}PRE-SALE ENDS IN</div>`;
+    html += `<div class="status-msg">${st.cycle <= 1 ? "EXTENDED INAUGURAL " : ""}PRE-SALE ENDS IN</div>`;
     html += `<div class="countdown${secs < 300 ? ' urgent' : ''}" id="cd">${fmtCountdown(secs)}</div>`;
     html += divider();
     html += statsHtml(st);
