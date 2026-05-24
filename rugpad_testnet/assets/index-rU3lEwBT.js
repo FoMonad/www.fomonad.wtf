@@ -595,7 +595,7 @@ import{$ as e,$t as t,A as n,An as r,At as i,B as a,Bn as o,Bt as s,C as c,Cn as
     }
   `}connectedCallback(){super.connectedCallback(),window.addEventListener(`hashchange`,this._onHash)}disconnectedCallback(){super.disconnectedCallback(),window.removeEventListener(`hashchange`,this._onHash)}render(){return H`
       <header>
-        <a class="logo" href="#pump">
+        <a class="logo" href="/">
           <span class="fo">FO</span><span class="mo">MO</span><span class="nad">NAD</span>
         </a>
         <nav>
