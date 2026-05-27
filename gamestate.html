@@ -233,9 +233,10 @@ const SHMON  = '0x1B68626dCa36c7fE922fD2d55E4f631d962dE19c';
 const FOMON  = '0x9f4834920e7ad3275F3cf6587Ad9c9F7d387F1CF';
 const SEL_GAMESTATE    = '0x2e2d1e56'; // gameState(bool)
 const SEL_PREVIEW      = '0x91767552'; // previewUnstake(uint256)
-const SEL_AIRDROP_MINTED = '0x56eb4654'; // totalAirdropMinted()
-const SEL_DEPLOY_TS    = '0x607ad0d7'; // deployTimestamp()
-const SEL_MAX_MINTABLE = '0xa3b619fe'; // maxMintable(uint256)
+const SEL_REMAINING_CEILING  = '0x354e9358'; // remainingCeilingAt(uint256)
+const SEL_SETTLEMENT_TS      = '0x8192a437'; // settlementTimestamp()
+const SEL_MAX_ROUND_DURATION = '0x45210920'; // maxRoundDuration()
+const SEL_INITIAL_TIMER      = '0x2968ec70'; // INITIAL_TIMER()
 const ZERO_ADDR     = '0x' + '0'.repeat(40);
 const ONE_ETHER     = 10n ** 18n;
 const PHASE_LABELS  = ['INSIDERS ONLY', 'PRE-PUMP', 'PUMPING', 'RUGGED'];
@@ -245,7 +246,6 @@ let shmonRate    = 0n;
 let tokenMeta    = null;
 let cdTimer      = null;
 let initialized  = false;
-let deployTs     = 0;   // cached deployTimestamp (seconds, never changes)
 let airdropLeft  = null; // BigInt, foMON wei remaining until phase end
 let refreshTimer = null;
 
@@ -263,7 +263,6 @@ function serializeForBroadcast() {
     shmonRate: shmonRate.toString(),
     airdropLeft: airdropLeft !== null ? airdropLeft.toString() : null,
     tokenMeta,
-    deployTs,
   };
 }
 
@@ -274,7 +273,6 @@ function applyBroadcast(d) {
   shmonRate   = BigInt(d.shmonRate);
   airdropLeft = d.airdropLeft !== null ? BigInt(d.airdropLeft) : null;
   tokenMeta   = d.tokenMeta;
-  deployTs    = d.deployTs;
   initialized = true;
 }
 
@@ -449,19 +447,18 @@ async function fetchState(withURI) {
   return decodeGameState(await ethCall(RUGPAD, data));
 }
 
-async function fetchAirdrop(phaseEndTime) {
-  if (!deployTs) {
-    deployTs = Number(decodeUint256(await ethCall(FOMON, SEL_DEPLOY_TS)));
-  }
-  const tEnd = Math.max(0, phaseEndTime - deployTs);
-  const tEndHex = BigInt(tEnd).toString(16).padStart(64, '0');
-  const [rawMinted, rawMax] = await Promise.all([
-    ethCall(FOMON, SEL_AIRDROP_MINTED),
-    ethCall(FOMON, SEL_MAX_MINTABLE + tEndHex),
+async function fetchAirdrop() {
+  const [rawSettlement, rawMaxDuration, rawInitialTimer] = await Promise.all([
+    ethCall(RUGPAD, SEL_SETTLEMENT_TS),
+    ethCall(RUGPAD, SEL_MAX_ROUND_DURATION),
+    ethCall(RUGPAD, SEL_INITIAL_TIMER),
   ]);
-  const minted = decodeUint256(rawMinted);
-  const max    = decodeUint256(rawMax);
-  return max > minted ? max - minted : 0n;
+  const settlementTimestamp = decodeUint256(rawSettlement);
+  const maxRoundDuration    = decodeUint256(rawMaxDuration);
+  const initialTimer        = decodeUint256(rawInitialTimer);
+  const tMax    = settlementTimestamp + initialTimer + maxRoundDuration;
+  const tMaxHex = tMax.toString(16).padStart(64, '0');
+  return decodeUint256(await ethCall(FOMON, SEL_REMAINING_CEILING + tMaxHex));
 }
 
 // ─── Rendering ───────────────────────────────────────────────
@@ -641,7 +638,7 @@ async function refresh() {
     }
 
     if (state.phase === 2) {
-      airdropLeft = await fetchAirdrop(state.phaseEndTime);
+      airdropLeft = await fetchAirdrop();
     }
 
     renderWidget();
