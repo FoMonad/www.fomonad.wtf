@@ -1180,11 +1180,14 @@ import{$ as e,$t as t,A as n,An as r,At as i,B as a,Bn as o,Bt as s,C as c,Cn as
       text-shadow: 0 0 20px #ff2d6b88;
       margin-bottom: 8px;
     }
-  `]}connectedCallback(){super.connectedCallback(),this._timerInterval=setInterval(()=>this.requestUpdate(),1e3)}disconnectedCallback(){super.disconnectedCallback(),this._timerInterval&&=(clearInterval(this._timerInterval),null)}async _triggerSettlement(){let e=z();if(!(!e||!L)){this.triggerPending=!0;try{J(await e.writeContract({address:j.game,abi:B,functionName:`triggerSettlement`,account:L.address,chain:e.chain}),`Rugpull triggered — settlement in progress`)}catch(e){Np(e)}finally{this.triggerPending=!1}}}_renderBuyerBlock(e,t,n){if(e===void 0)return H`<div class="no-buyer">${this.spin}</div>`;let r=e===`0x0000000000000000000000000000000000000000`?void 0:this.liveValue(`game.referralCodeOf:${e.toLowerCase()}`),i=j.explorer;return e===`0x0000000000000000000000000000000000000000`?H`
+  `]}connectedCallback(){super.connectedCallback(),this._timerInterval=setInterval(()=>this.requestUpdate(),1e3)}disconnectedCallback(){super.disconnectedCallback(),this._timerInterval&&=(clearInterval(this._timerInterval),null)}async _triggerSettlement(){let e=z();if(!(!e||!L)){this.triggerPending=!0;try{J(await e.writeContract({address:j.game,abi:B,functionName:`triggerSettlement`,account:L.address,chain:e.chain}),`Rugpull triggered — settlement in progress`)}catch(e){Np(e)}finally{this.triggerPending=!1}}}_renderBuyerBlock(e,t,n){if(e===void 0)return H`<div class="no-buyer">${this.spin}</div>`;let r=e===`0x0000000000000000000000000000000000000000`?void 0:this.liveValue(`game.referralCodeOf:${e.toLowerCase()}`),i=j.explorer,a=n?`Rugpuller`:`Current Rugpuller`,o=L?.address;return e===`0x0000000000000000000000000000000000000000`?H`
       <div class="no-buyer">no rugpuller yet</div>
     `:H`
       <div class="rugpuller-block">
-        <div class="rugpuller-label">${n?`Rugpuller`:`Current Rugpuller`}${r?H` · <span style="color:#ffe600">${r}</span>`:``}</div>
+        <div class="rugpuller-label">
+          ${a}${r?H` · <span style="color:#ffe600">${r}</span>`:``}
+          ${n?``:o==e?H`<br>(As long as no one else buys)`:H`<br>(This will be you if you buy now)`}
+        </div>
         ${i?H`
           <a class="rugpuller-addr" href="${i}/address/${e}" target="_blank" rel="noopener noreferrer">
             <span class="addr-short">${Ep(e)}</span>
@@ -1196,7 +1199,7 @@ import{$ as e,$t as t,A as n,An as r,At as i,B as a,Bn as o,Bt as s,C as c,Cn as
             <span class="addr-full">${e}</span>
           </div>
         `}
-        <div class="prize-label">Their cut${n?``:` (this could be yours)`}</div>
+        <div class="prize-label">Their cut${n?``:` (when timer reaches zero)`}</div>
         <div class="prize">
           <live-valuation key="${t}" numerator="90" denominator="100"></live-valuation>
         </div>
